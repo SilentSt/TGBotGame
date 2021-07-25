@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
 
-namespace Telegram.Bot.Examples.Echo
+namespace TGBotGame
 {
     public static class Program
     {
