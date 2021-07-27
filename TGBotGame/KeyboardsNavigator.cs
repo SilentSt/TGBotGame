@@ -13,43 +13,43 @@ namespace TGBotGame
             FillBalance,
             Friends
         }
-        public void PushToReasonPunishment(long? userId, ITelegramBotClient botClient)
+        public void PushToReasonPunishment(ITelegramBotClient botClient, Telegram.Bot.Types.User user)
         {
             MessageSender.SendMessage(botClient, Keyboards.PrepareReasonPunishmentKeyboard(),
-                Constants.REASON_PUNISHMENT_TEXT, userId);
-            Handlers.users[userId].curState = CurentState.ReasonPunishment;
+                Constants.REASON_PUNISHMENT_TEXT, user);
+            Handlers.users[user.Id].curState = CurentState.ReasonPunishment;
         }
 
-        public void PushToReason(long? userId, ITelegramBotClient botClient)
+        public void PushToReason(ITelegramBotClient botClient, Telegram.Bot.Types.User user)
         {
-            MessageSender.SendMessage(botClient, Keyboards.PrepareReasonKeyboard(), Constants.REASON_TEXT, userId);
-            Handlers.users[userId].curState = CurentState.Reason;
+            MessageSender.SendMessage(botClient, Keyboards.PrepareReasonKeyboard(), Constants.REASON_TEXT, user);
+            Handlers.users[user.Id].curState = CurentState.Reason;
         }
 
-        public void PushToPunishment(long? userId, ITelegramBotClient botClient)
+        public void PushToPunishment(ITelegramBotClient botClient, Telegram.Bot.Types.User user)
         {
             //get balance from DB
             var balance = 0;
-            MessageSender.SendMessage(botClient, Keyboards.PrepareRemovePunishmentKeyboard(), Constants.PUNISHMENT_TEXT + balance, userId);
-            Handlers.users[userId].curState = CurentState.Punishment;
+            MessageSender.SendMessage(botClient, Keyboards.PrepareRemovePunishmentKeyboard(), Constants.PUNISHMENT_TEXT + balance, user);
+            Handlers.users[user.Id].curState = CurentState.Punishment;
         }
 
-        public void PushToFillBalance(long? userId, ITelegramBotClient botClient)
+        public void PushToFillBalance(ITelegramBotClient botClient, Telegram.Bot.Types.User user)
         {
-            MessageSender.SendMessage(botClient, Keyboards.PrepareFillBalanceKeyboard(), Constants.FILL_CREDITS_TEXT, userId);
-            Handlers.users[userId].curState = CurentState.FillBalance;
+            MessageSender.SendMessage(botClient, Keyboards.PrepareFillBalanceKeyboard(), Constants.FILL_CREDITS_TEXT, user);
+            Handlers.users[user.Id].curState = CurentState.FillBalance;
         }
 
-        public void PushToFriends(long? userId, ITelegramBotClient botClient)
+        public void PushToFriends(ITelegramBotClient botClient, Telegram.Bot.Types.User user)
         {
-            MessageSender.SendMessage(botClient, Keyboards.PrepareFriendsKeyboard(), Constants.FRIENDS_TEXT, userId);
-            Handlers.users[userId].curState = CurentState.Friends;
+            MessageSender.SendMessage(botClient, Keyboards.PrepareFriendsKeyboard(), Constants.FRIENDS_TEXT, user);
+            Handlers.users[user.Id].curState = CurentState.Friends;
         }
 
-        public void PopToMenu(long? userId, ITelegramBotClient botClient)
+        public void PopToMenu(ITelegramBotClient botClient, Telegram.Bot.Types.User user)
         {
-            MessageSender.SendMessage(botClient, Keyboards.PrepareMenuKeyboard(), Constants.MENU_TEXT, userId);
-            Handlers.users[userId].curState = CurentState.Menu;
+            MessageSender.SendMessage(botClient, Keyboards.PrepareMenuKeyboard(), Constants.MENU_TEXT, user);
+            Handlers.users[user.Id].curState = CurentState.Menu;
         }
         
     }

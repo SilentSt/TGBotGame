@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using BotDataSet;
 using Telegram.Bot.Types.ReplyMarkups;
 
 namespace TGBotGame
@@ -42,6 +44,10 @@ namespace TGBotGame
                 {
                     new KeyboardButton("Мои друзья"),
                     new KeyboardButton("Удалить из друзей")
+                },
+                new KeyboardButton[]
+                {
+                    new KeyboardButton("Меню")
                 }
             };
             return rpm;
@@ -57,6 +63,10 @@ namespace TGBotGame
                     new KeyboardButton("Причина варна"),
                     new KeyboardButton("Причина мута"),
                     new KeyboardButton("Причина бана")
+                },
+                new KeyboardButton[]
+                {
+                    new KeyboardButton("Меню")
                 }
             };
             return rpm;
@@ -71,6 +81,10 @@ namespace TGBotGame
                 {
                     new KeyboardButton("Узнать причину"),
                     new KeyboardButton("Снять наказание")
+                },
+                new KeyboardButton[]
+                {
+                    new KeyboardButton("Меню")
                 }
             };
             return rpm;
@@ -90,6 +104,10 @@ namespace TGBotGame
                 new KeyboardButton[]
                 {
                     new KeyboardButton("Пополнить баланс")
+                },
+                new KeyboardButton[]
+                {
+                    new KeyboardButton("Меню")
                 }
             };
             return rpm;
@@ -105,9 +123,29 @@ namespace TGBotGame
                     new KeyboardButton("5 кредитов"),
                     new KeyboardButton("10 кредитов"),
                     new KeyboardButton("20 кредитов")
+                },
+                new KeyboardButton[]
+                {
+                    new KeyboardButton("Меню")
                 }
             };
             return rpm;
+        }
+
+        public static InlineKeyboardMarkup PrepareRemoveFriendsList(Telegram.Bot.Types.User user)
+        {
+            var friendsList = Assist.GetFriendsList(user);
+            List<InlineKeyboardButton> users = new List<InlineKeyboardButton>();
+            foreach (var friend in friendsList)
+            {
+                var btn = new InlineKeyboardButton();
+                btn.Text = friend.UserName;
+                btn.CallbackData = friend.UserId.ToString();
+                users.Add(btn);
+            }
+
+            return new InlineKeyboardMarkup(users);
+
         }
     }
 }

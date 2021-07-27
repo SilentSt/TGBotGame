@@ -5,25 +5,25 @@ namespace TGBotGame
 {
     public static class MessageSender
     {
-        public static void SendMessage(ITelegramBotClient botClient, string message, long? chatId)
+        public static void SendMessage(ITelegramBotClient botClient, string message, Telegram.Bot.Types.User user)
         {
-            botClient.SendTextMessageAsync(chatId,
+            botClient.SendTextMessageAsync(user.Id,
                 message
             );
 
         }
 
-        public static void SendMessage(ITelegramBotClient botClient, ReplyKeyboardMarkup keyboard, string message, long? chatId)
+        public static void SendMessage(ITelegramBotClient botClient, ReplyKeyboardMarkup keyboard, string message, Telegram.Bot.Types.User user)
         {
-            botClient.SendTextMessageAsync(chatId,
+            botClient.SendTextMessageAsync(user.Id,
                 message,
                 replyMarkup:keyboard
             );
         }
         
-        public static void SendMessage(ITelegramBotClient botClient, InlineKeyboardMarkup keyboard, string message, long? chatId)
+        public static void SendMessage(ITelegramBotClient botClient, InlineKeyboardMarkup keyboard, string message, Telegram.Bot.Types.User user)
         {
-            botClient.SendTextMessageAsync(chatId,
+            botClient.SendTextMessageAsync(user.Id,
                 message,
                 replyMarkup:keyboard
             );
