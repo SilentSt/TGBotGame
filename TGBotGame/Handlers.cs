@@ -16,11 +16,14 @@ namespace TGBotGame
 {
     public class Handlers
     {
-        public static Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
+        public static Dictionary<long? ,User> users = new Dictionary<long?, User>();
+        public static Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
+            CancellationToken cancellationToken)
         {
             var ErrorMessage = exception switch
             {
-                ApiRequestException apiRequestException => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
+                ApiRequestException apiRequestException =>
+                    $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
                 _ => exception.ToString()
             };
 
@@ -28,7 +31,8 @@ namespace TGBotGame
             return Task.CompletedTask;
         }
 
-        public static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+        public static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update,
+            CancellationToken cancellationToken)
         {
             var handler = update.Type switch
             {
@@ -58,60 +62,98 @@ namespace TGBotGame
 
         private static async Task BotOnMessageReceived(ITelegramBotClient botClient, Message message)
         {
-            Console.WriteLine($"Receive message type: {message.Type}");
             if (message.Type != MessageType.Text)
                 return;
-
-            var action = (message.Text.Split(' ').First()) switch
+            if (message.From.Id != message.Chat.Id)
             {
-                "/next" => CreateRequestNextGame(botClient, message),//SendInlineKeyboard(botClient, message),
-                "/gift" => SendGiftToFriend(botClient, message),
-                "/friends" => ShowFriends(botClient, message),
-                "/friendsplay" => VokeFriendsPlay(botClient, message),
-                "/delfriends" => DeleteFriend(botClient, message),
-                "/help" => SendHelpMessage(botClient, message),
-                _ => Usage(botClient, message)
-            };
-            static async Task<Message> Usage(ITelegramBotClient botClient, Message message)
-            {
-                const string usage = "Команды бота:\n" +
-                                     "/next – позвать на следующую игру\n" +
-                                     "/gift – передать кредиты (количество)\n" +
-                                     "/friends – добавить в друзья\n" +
-                                     "/friendsplay – позвать друзей\n" +
-                                     "/delfriends – удалить из друзей\n" +
-                                     "/help - помощь";
-                //ReplyKeyboardMarkup keyboard = Keyboards.PrepareMenuKeyboard();
-                //keyboard.Keyboard = Keyboards.PrepareMenuKeyboard();
-                return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
-                                                            text: usage,
-                                                            replyMarkup:Keyboards.PrepareMenuKeyboard());
+                var action = (message.Text.Split(' ').First()) switch
+                {
+                    "/next" => GroupFunctions.CreateRequestNextGame(botClient, message),
+                    "/gift" => GroupFunctions.SendGiftToFriend(botClient, message),
+                    "/friends" => GroupFunctions.ShowFriends(botClient, message),
+                    "/friendsplay" => GroupFunctions.VokeFriendsPlay(botClient, message),
+                    "/delfriends" => GroupFunctions.DeleteFriend(botClient, message),
+                    "/help" => SendHelpMessage(botClient, message),
+                    _ => Usage(botClient, message, Constants.GROUP_USAGE, new ReplyKeyboardMarkup())
+                };
             }
-        }
+            else
+            {
+                if (!users.ContainsKey(message.Chat.Id))
+                {
+                    users.Add(message.Chat.Id, new User(message.Chat.Id));
+                }
+                switch (message.Text)
+                {
+                    case "🗣 Позвать меня на следующую игру":
+                        PrivateChatFunctions.VokeToNextGame(message.Chat.Id, botClient);
+                        break;
+                    case "❓ Узнать причину и снять мут/варн/бан":
+                        users[message.Chat.Id].keyboardNavigator.PushToReasonPunishment(message.Chat.Id, botClient);
+                        break;
+                    case "🤝 Кто у меня в друзьях?":
+                        users[message.Chat.Id].keyboardNavigator.PushToFriends(message.Chat.Id, botClient);
+                        break;
+                    case "📕 Правила чата и игры":
+                        PrivateChatFunctions.GetRules(message.Chat.Id, botClient);
+                        break;
+                    case "🤵🏻 Описание ролей":
+                        PrivateChatFunctions.GetRolesDescription(message.Chat.Id, botClient);
+                        break;
+                    case "Мои друзья":
+                        PrivateChatFunctions.GetFriendsList(message.Chat.Id, botClient);
+                        break;
+                    case "Удалить из друзей":
+                        PrivateChatFunctions.RemoveFriend(message.Chat.Id, botClient);
+                        break;
+                    case "Причина варна":
+                        PrivateChatFunctions.GetReason(message.Chat.Id, PrivateChatFunctions.Punishments.Warn, botClient);
+                        break;
+                    case "Причина мута":
+                        PrivateChatFunctions.GetReason(message.Chat.Id, PrivateChatFunctions.Punishments.Mute, botClient);
+                        break;
+                    case "Причина бана":
+                        PrivateChatFunctions.GetReason(message.Chat.Id, PrivateChatFunctions.Punishments.Ban, botClient);
+                        break;
+                    case "Узнать причину":
+                        users[message.Chat.Id].keyboardNavigator.PushToReason(message.Chat.Id, botClient);
+                        break;
+                    case "Снять наказание":
+                        users[message.Chat.Id].keyboardNavigator.PushToPunishment(message.Chat.Id, botClient);
+                        break;
+                    case "Пополнить баланс":
+                        users[message.Chat.Id].keyboardNavigator.PushToFillBalance(message.Chat.Id, botClient);
+                        break;
+                    case"5 кредитов":
+                        PrivateChatFunctions.FillBalance(message.Chat.Id, PrivateChatFunctions.Amount.Five, botClient);
+                        break;
+                    case"10 кредитов":
+                        PrivateChatFunctions.FillBalance(message.Chat.Id, PrivateChatFunctions.Amount.Ten, botClient);
+                        break;
+                    case"20 кредитов":
+                        PrivateChatFunctions.FillBalance(message.Chat.Id, PrivateChatFunctions.Amount.Twenty, botClient);
+                        break;
+                    case "Снять варн":
+                        PrivateChatFunctions.RemovePunishment(message.Chat.Id, PrivateChatFunctions.Punishments.Warn, botClient);
+                        break;
+                    case "Снять мут":
+                        PrivateChatFunctions.RemovePunishment(message.Chat.Id, PrivateChatFunctions.Punishments.Mute, botClient);
+                        break;
+                    case "Снять бан":
+                        PrivateChatFunctions.RemovePunishment(message.Chat.Id, PrivateChatFunctions.Punishments.Ban, botClient);
+                        break;
+                    default:
+                        Usage(botClient, message, Constants.USER_USAGE, Keyboards.PrepareMenuKeyboard());
+                        break;
+                }
+            }
 
-        private static async Task DeleteFriend(ITelegramBotClient botClient, Message message)
-        {
-            
-        }
-
-        private static async Task VokeFriendsPlay(ITelegramBotClient botClient, Message message)
-        {
-            
-        }
-
-        private static async Task ShowFriends(ITelegramBotClient botClient, Message message)
-        {
-            
-        }
-
-        private static async Task SendGiftToFriend(ITelegramBotClient botClient, Message message)
-        {
-            
-        }
-
-        private static async Task CreateRequestNextGame(ITelegramBotClient botClient, Message message)
-        {
-            
+            static async Task<Message> Usage(ITelegramBotClient botClient, Message message, string mes, ReplyKeyboardMarkup keyboard)
+            {
+                return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
+                    text: mes,
+                    replyMarkup: keyboard);
+            }
         }
 
         // Process Inline Keyboard callback data
@@ -130,7 +172,8 @@ namespace TGBotGame
         {
             Console.WriteLine($"Received inline query from: {inlineQuery.From.Id}");
 
-            InlineQueryResultBase[] results = {
+            InlineQueryResultBase[] results =
+            {
                 // displayed result
                 new InlineQueryResultArticle(
                     id: "3",
@@ -153,7 +196,8 @@ namespace TGBotGame
             Console.WriteLine($"Help");
         }
 
-        private static Task BotOnChosenInlineResultReceived(ITelegramBotClient botClient, ChosenInlineResult chosenInlineResult)
+        private static Task BotOnChosenInlineResultReceived(ITelegramBotClient botClient,
+            ChosenInlineResult chosenInlineResult)
         {
             Console.WriteLine($"Received inline result: {chosenInlineResult.ResultId}");
             return Task.CompletedTask;
