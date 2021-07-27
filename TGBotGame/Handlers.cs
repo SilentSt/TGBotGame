@@ -16,6 +16,7 @@ namespace TGBotGame
 {
     public class Handlers
     {
+        private static Dictionary<long ,User> users;
         public static Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
             CancellationToken cancellationToken)
         {
@@ -61,7 +62,6 @@ namespace TGBotGame
 
         private static async Task BotOnMessageReceived(ITelegramBotClient botClient, Message message)
         {
-            Console.WriteLine($"Receive message type: {message.Type}");
             if (message.Type != MessageType.Text)
                 return;
             if (message.From.Id != message.Chat.Id)
@@ -79,6 +79,10 @@ namespace TGBotGame
             }
             else
             {
+                if (!users.ContainsKey(message.Chat.Id))
+                {
+                    users.Add(message.Chat.Id, new User(message.Chat.Id));
+                }
                 var action = message.Text.Split(' ').First() switch
                 {
                     "/rer" => PrivateChatFunctions.FillBalance(),
