@@ -13,13 +13,13 @@ namespace BotDataSet
         {
             using (BotDBContext cont = new BotDBContext())
             {
-                if (cont.Users.Any(x => x.Id == user.Id && x.UserName == user.Username))
+                if (cont.Users.Any(x => x.UserId == user.Id && x.UserName == user.Username))
                 {
                     return cont.Users.FirstOrDefault(x => x.UserName == user.Username);
                 }
                 else
                 {
-                    var NewUser = cont.Users.Add(new BotUser() { Id = user.Id, UserName = user.Username });
+                    var NewUser = cont.Users.Add(new BotUser() { UserId = user.Id, UserName = user.Username });
                     cont.SaveChanges();
                     return NewUser.Entity;
                 }
@@ -47,7 +47,18 @@ namespace BotDataSet
 
         public static long GetChatId(this User user)
         {
-            return GetUser(user).Id;
+            return GetUser(user).UserId;
+        }
+
+        public static IEnumerable<BotUser> GetFriendsList(this User user)
+        {
+            var botuser = GetUser(user);
+            IEnumerable<BotUser> result;
+            using (BotDBContext cont = new BotDBContext())
+            {
+                result = cont.Friends.Where(x => x.User == botuser).Select(u => u.Friend).ToList();
+                return result;
+            }
         }
     }
 }
