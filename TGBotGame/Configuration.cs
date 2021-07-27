@@ -1,7 +1,12 @@
-﻿namespace TGBotGame
+﻿using System.IO;
+using System.Net;
+
+namespace TGBotGame
 {
     public static class Configuration
     {
-        public const string BotToken = "1435986427:AAH7tfPHWBpUQvWFDylWVR1NEswh6zJANbo";
+        public static readonly string BotToken = File.ReadAllText("configuration/bot_token.txt");
+        public static readonly string RolesDescLink = File.ReadAllText("configuration/roles_descriptions_chat_link.txt");
+        public static readonly string RulesLink = File.ReadAllText("configuration/rules_chat_link.txt");
     }
 }

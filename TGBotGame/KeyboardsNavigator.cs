@@ -28,7 +28,9 @@ namespace TGBotGame
 
         public void PushToPunishment(long? userId, ITelegramBotClient botClient)
         {
-            MessageSender.SendMessage(botClient, Keyboards.PrepareRemovePunishmentKeyboard(), Constants.PUNISHMENT_TEXT, userId);
+            //get balance from DB
+            var balance = 0;
+            MessageSender.SendMessage(botClient, Keyboards.PrepareRemovePunishmentKeyboard(), Constants.PUNISHMENT_TEXT + balance, userId);
             Handlers.users[userId].curState = CurentState.Punishment;
         }
 
