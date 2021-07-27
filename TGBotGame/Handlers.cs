@@ -16,11 +16,13 @@ namespace TGBotGame
 {
     public class Handlers
     {
-        public static Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
+        public static Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
+            CancellationToken cancellationToken)
         {
             var ErrorMessage = exception switch
             {
-                ApiRequestException apiRequestException => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
+                ApiRequestException apiRequestException =>
+                    $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
                 _ => exception.ToString()
             };
 
@@ -28,7 +30,8 @@ namespace TGBotGame
             return Task.CompletedTask;
         }
 
-        public static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
+        public static async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update,
+            CancellationToken cancellationToken)
         {
             var handler = update.Type switch
             {
@@ -61,57 +64,34 @@ namespace TGBotGame
             Console.WriteLine($"Receive message type: {message.Type}");
             if (message.Type != MessageType.Text)
                 return;
-
-            var action = (message.Text.Split(' ').First()) switch
+            if (message.From.Id != message.Chat.Id)
             {
-                "/next" => CreateRequestNextGame(botClient, message),//SendInlineKeyboard(botClient, message),
-                "/gift" => SendGiftToFriend(botClient, message),
-                "/friends" => ShowFriends(botClient, message),
-                "/friendsplay" => VokeFriendsPlay(botClient, message),
-                "/delfriends" => DeleteFriend(botClient, message),
-                "/help" => SendHelpMessage(botClient, message),
-                _ => Usage(botClient, message)
-            };
-            static async Task<Message> Usage(ITelegramBotClient botClient, Message message)
-            {
-                const string usage = "Команды бота:\n" +
-                                     "/next – позвать на следующую игру\n" +
-                                     "/gift – передать кредиты (количество)\n" +
-                                     "/friends – добавить в друзья\n" +
-                                     "/friendsplay – позвать друзей\n" +
-                                     "/delfriends – удалить из друзей\n" +
-                                     "/help - помощь";
-                //ReplyKeyboardMarkup keyboard = Keyboards.PrepareMenuKeyboard();
-                //keyboard.Keyboard = Keyboards.PrepareMenuKeyboard();
-                return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
-                                                            text: usage,
-                                                            replyMarkup:Keyboards.PrepareMenuKeyboard());
+                var action = (message.Text.Split(' ').First()) switch
+                {
+                    "/next" => GroupFunctions.CreateRequestNextGame(botClient, message),
+                    "/gift" => GroupFunctions.SendGiftToFriend(botClient, message),
+                    "/friends" => GroupFunctions.ShowFriends(botClient, message),
+                    "/friendsplay" => GroupFunctions.VokeFriendsPlay(botClient, message),
+                    "/delfriends" => GroupFunctions.DeleteFriend(botClient, message),
+                    "/help" => SendHelpMessage(botClient, message),
+                    _ => Usage(botClient, message, Constants.GROUP_USAGE, new ReplyKeyboardMarkup())
+                };
             }
-        }
+            else
+            {
+                var action = message.Text.Split(' ').First() switch
+                {
+                    "/rer" => PrivateChatFunctions.FillBalance(),
+                    _ => Usage(botClient, message, Constants.USER_USAGE, Keyboards.PrepareMenuKeyboard())
+                };
+            }
 
-        private static async Task DeleteFriend(ITelegramBotClient botClient, Message message)
-        {
-            
-        }
-
-        private static async Task VokeFriendsPlay(ITelegramBotClient botClient, Message message)
-        {
-            
-        }
-
-        private static async Task ShowFriends(ITelegramBotClient botClient, Message message)
-        {
-            
-        }
-
-        private static async Task SendGiftToFriend(ITelegramBotClient botClient, Message message)
-        {
-            
-        }
-
-        private static async Task CreateRequestNextGame(ITelegramBotClient botClient, Message message)
-        {
-            
+            static async Task<Message> Usage(ITelegramBotClient botClient, Message message, string mes, ReplyKeyboardMarkup keyboard)
+            {
+                return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
+                    text: mes,
+                    replyMarkup: keyboard);
+            }
         }
 
         // Process Inline Keyboard callback data
@@ -130,7 +110,8 @@ namespace TGBotGame
         {
             Console.WriteLine($"Received inline query from: {inlineQuery.From.Id}");
 
-            InlineQueryResultBase[] results = {
+            InlineQueryResultBase[] results =
+            {
                 // displayed result
                 new InlineQueryResultArticle(
                     id: "3",
@@ -153,7 +134,8 @@ namespace TGBotGame
             Console.WriteLine($"Help");
         }
 
-        private static Task BotOnChosenInlineResultReceived(ITelegramBotClient botClient, ChosenInlineResult chosenInlineResult)
+        private static Task BotOnChosenInlineResultReceived(ITelegramBotClient botClient,
+            ChosenInlineResult chosenInlineResult)
         {
             Console.WriteLine($"Received inline result: {chosenInlineResult.ResultId}");
             return Task.CompletedTask;
