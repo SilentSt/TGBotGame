@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -63,109 +64,54 @@ namespace TGBotGame
 
             var action = (message.Text.Split(' ').First()) switch
             {
-                "/inline" => SendInlineKeyboard(botClient, message),
-                "/keyboard" => SendReplyKeyboard(botClient, message),
-                "/remove" => RemoveKeyboard(botClient, message),
-                "/photo" => SendFile(botClient, message),
-                "/request" => RequestContactAndLocation(botClient, message),
+                "/next" => CreateRequestNextGame(botClient, message),//SendInlineKeyboard(botClient, message),
+                "/gift" => SendGiftToFriend(botClient, message),
+                "/friends" => ShowFriends(botClient, message),
+                "/friendsplay" => VokeFriendsPlay(botClient, message),
+                "/delfriends" => DeleteFriend(botClient, message),
+                "/help" => SendHelpMessage(botClient, message),
                 _ => Usage(botClient, message)
             };
-            var sentMessage = await action;
-            Console.WriteLine($"The message was sent with id: {sentMessage.MessageId}");
-
-            // Send inline keyboard
-            // You can process responses in BotOnCallbackQueryReceived handler
-            static async Task<Message> SendInlineKeyboard(ITelegramBotClient botClient, Message message)
-            {
-                await botClient.SendChatActionAsync(message.Chat.Id, ChatAction.Typing);
-
-                // Simulate longer running task
-                await Task.Delay(500);
-
-                var inlineKeyboard = new InlineKeyboardMarkup(new[]
-                {
-                    // first row
-                    new []
-                    {
-                        InlineKeyboardButton.WithCallbackData("1.1", "11"),
-                        InlineKeyboardButton.WithCallbackData("1.2", "12"),
-                    },
-                    // second row
-                    new []
-                    {
-                        InlineKeyboardButton.WithCallbackData("2.1", "21"),
-                        InlineKeyboardButton.WithCallbackData("2.2", "22"),
-                    },
-                });
-
-                return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
-                                                            text: "Choose",
-                                                            replyMarkup: inlineKeyboard);
-            }
-
-            static async Task<Message> SendReplyKeyboard(ITelegramBotClient botClient, Message message)
-            {
-                var replyKeyboardMarkup = new ReplyKeyboardMarkup(
-                    new KeyboardButton[][]
-                    {
-                        new KeyboardButton[] { "1.1", "1.2" },
-                        new KeyboardButton[] { "2.1", "2.2" },
-                    })
-                {
-                    ResizeKeyboard = true
-                };
-
-                return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
-                                                            text: "Choose",
-                                                            replyMarkup: replyKeyboardMarkup);
-            }
-
-            static async Task<Message> RemoveKeyboard(ITelegramBotClient botClient, Message message)
-            {
-                return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
-                                                            text: "Removing keyboard",
-                                                            replyMarkup: new ReplyKeyboardRemove());
-            }
-
-            static async Task<Message> SendFile(ITelegramBotClient botClient, Message message)
-            {
-                await botClient.SendChatActionAsync(message.Chat.Id, ChatAction.UploadPhoto);
-
-                const string filePath = @"Files/tux.png";
-                using FileStream fileStream = new(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-                var fileName = filePath.Split(Path.DirectorySeparatorChar).Last();
-
-                return await botClient.SendPhotoAsync(chatId: message.Chat.Id,
-                                                      photo: new InputOnlineFile(fileStream, fileName),
-                                                      caption: "Nice Picture");
-            }
-
-            static async Task<Message> RequestContactAndLocation(ITelegramBotClient botClient, Message message)
-            {
-                var RequestReplyKeyboard = new ReplyKeyboardMarkup(new[]
-                {
-                    KeyboardButton.WithRequestLocation("Location"),
-                    KeyboardButton.WithRequestContact("Contact"),
-                });
-
-                return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
-                                                            text: "Who or Where are you?",
-                                                            replyMarkup: RequestReplyKeyboard);
-            }
-
             static async Task<Message> Usage(ITelegramBotClient botClient, Message message)
             {
-                const string usage = "Usage:\n" +
-                                     "/inline   - send inline keyboard\n" +
-                                     "/keyboard - send custom keyboard\n" +
-                                     "/remove   - remove custom keyboard\n" +
-                                     "/photo    - send a photo\n" +
-                                     "/request  - request location or contact";
-
+                const string usage = "Команды бота:\n" +
+                                     "/next – позвать на следующую игру\n" +
+                                     "/gift – передать кредиты (количество)\n" +
+                                     "/friends – добавить в друзья\n" +
+                                     "/friendsplay – позвать друзей\n" +
+                                     "/delfriends – удалить из друзей\n" +
+                                     "/help - помощь";
+                //ReplyKeyboardMarkup keyboard = Keyboards.PrepareMenuKeyboard();
+                //keyboard.Keyboard = Keyboards.PrepareMenuKeyboard();
                 return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
                                                             text: usage,
-                                                            replyMarkup: new ReplyKeyboardRemove());
+                                                            replyMarkup:Keyboards.PrepareMenuKeyboard());
             }
+        }
+
+        private static async Task DeleteFriend(ITelegramBotClient botClient, Message message)
+        {
+            
+        }
+
+        private static async Task VokeFriendsPlay(ITelegramBotClient botClient, Message message)
+        {
+            
+        }
+
+        private static async Task ShowFriends(ITelegramBotClient botClient, Message message)
+        {
+            
+        }
+
+        private static async Task SendGiftToFriend(ITelegramBotClient botClient, Message message)
+        {
+            
+        }
+
+        private static async Task CreateRequestNextGame(ITelegramBotClient botClient, Message message)
+        {
+            
         }
 
         // Process Inline Keyboard callback data
@@ -200,6 +146,11 @@ namespace TGBotGame
                 results: results,
                 isPersonal: true,
                 cacheTime: 0);
+        }
+
+        private static async Task SendHelpMessage(ITelegramBotClient botClient, Message message)
+        {
+            Console.WriteLine($"Help");
         }
 
         private static Task BotOnChosenInlineResultReceived(ITelegramBotClient botClient, ChosenInlineResult chosenInlineResult)
