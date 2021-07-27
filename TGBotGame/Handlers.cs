@@ -16,7 +16,7 @@ namespace TGBotGame
 {
     public class Handlers
     {
-        private static Dictionary<long ,User> users;
+        public static Dictionary<long? ,User> users = new Dictionary<long?, User>();
         public static Task HandleErrorAsync(ITelegramBotClient botClient, Exception exception,
             CancellationToken cancellationToken)
         {
@@ -83,11 +83,69 @@ namespace TGBotGame
                 {
                     users.Add(message.Chat.Id, new User(message.Chat.Id));
                 }
-                var action = message.Text.Split(' ').First() switch
+                switch (message.Text)
                 {
-                    "/rer" => PrivateChatFunctions.FillBalance(),
-                    _ => Usage(botClient, message, Constants.USER_USAGE, Keyboards.PrepareMenuKeyboard())
-                };
+                    case "🗣 Позвать меня на следующую игру":
+                        PrivateChatFunctions.VokeToNextGame(message.Chat.Id, botClient);
+                        break;
+                    case "❓ Узнать причину и снять мут/варн/бан":
+                        users[message.Chat.Id].keyboardNavigator.PushToReasonPunishment(message.Chat.Id, botClient);
+                        break;
+                    case "🤝 Кто у меня в друзьях?":
+                        users[message.Chat.Id].keyboardNavigator.PushToFriends(message.Chat.Id, botClient);
+                        break;
+                    case "📕 Правила чата и игры":
+                        PrivateChatFunctions.GetRules(message.Chat.Id, botClient);
+                        break;
+                    case "🤵🏻 Описание ролей":
+                        PrivateChatFunctions.GetRolesDescription(message.Chat.Id, botClient);
+                        break;
+                    case "Мои друзья":
+                        PrivateChatFunctions.GetFriendsList(message.Chat.Id, botClient);
+                        break;
+                    case "Удалить из друзей":
+                        PrivateChatFunctions.RemoveFriend(message.Chat.Id, botClient);
+                        break;
+                    case "Причина варна":
+                        PrivateChatFunctions.GetReason(message.Chat.Id, PrivateChatFunctions.Punishments.Warn, botClient);
+                        break;
+                    case "Причина мута":
+                        PrivateChatFunctions.GetReason(message.Chat.Id, PrivateChatFunctions.Punishments.Mute, botClient);
+                        break;
+                    case "Причина бана":
+                        PrivateChatFunctions.GetReason(message.Chat.Id, PrivateChatFunctions.Punishments.Ban, botClient);
+                        break;
+                    case "Узнать причину":
+                        users[message.Chat.Id].keyboardNavigator.PushToReason(message.Chat.Id, botClient);
+                        break;
+                    case "Снять наказание":
+                        users[message.Chat.Id].keyboardNavigator.PushToPunishment(message.Chat.Id, botClient);
+                        break;
+                    case "Пополнить баланс":
+                        users[message.Chat.Id].keyboardNavigator.PushToFillBalance(message.Chat.Id, botClient);
+                        break;
+                    case"5 кредитов":
+                        PrivateChatFunctions.FillBalance(message.Chat.Id, PrivateChatFunctions.Amount.Five, botClient);
+                        break;
+                    case"10 кредитов":
+                        PrivateChatFunctions.FillBalance(message.Chat.Id, PrivateChatFunctions.Amount.Ten, botClient);
+                        break;
+                    case"20 кредитов":
+                        PrivateChatFunctions.FillBalance(message.Chat.Id, PrivateChatFunctions.Amount.Twenty, botClient);
+                        break;
+                    case "Снять варн":
+                        PrivateChatFunctions.RemovePunishment(message.Chat.Id, PrivateChatFunctions.Punishments.Warn, botClient);
+                        break;
+                    case "Снять мут":
+                        PrivateChatFunctions.RemovePunishment(message.Chat.Id, PrivateChatFunctions.Punishments.Mute, botClient);
+                        break;
+                    case "Снять бан":
+                        PrivateChatFunctions.RemovePunishment(message.Chat.Id, PrivateChatFunctions.Punishments.Ban, botClient);
+                        break;
+                    default:
+                        Usage(botClient, message, Constants.USER_USAGE, Keyboards.PrepareMenuKeyboard());
+                        break;
+                }
             }
 
             static async Task<Message> Usage(ITelegramBotClient botClient, Message message, string mes, ReplyKeyboardMarkup keyboard)

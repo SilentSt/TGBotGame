@@ -4,12 +4,14 @@ namespace TGBotGame
 {
     public class User
     {
-        public string chatId;
+        public long? chatId;
+        public KeyboardsNavigator keyboardNavigator;
         public KeyboardsNavigator.CurentState curState = KeyboardsNavigator.CurentState.Menu;
 
-        public User(long chatId)
+        public User(long? chatId)
         {
-            this.chatId = this.chatId;
+            this.chatId = chatId;
+            keyboardNavigator = new KeyboardsNavigator();
         }
     }
 }
