@@ -111,7 +111,7 @@ namespace BotDataSet
         public static async Task<ActionResult> RemoveWarn(this User user)
         {
             var botUser = GetUser(user);
-            if(botUser.Warns.Count < 1)
+            if (botUser.Warns.Count < 1)
             {
                 return new AlreadyResult();
             }
@@ -134,7 +134,7 @@ namespace BotDataSet
             using (var cont = new BotDBContext())
             {
                 cont.Users.Update(botUser);
-                cont.SaveChanges();
+                await cont.SaveChangesAsync();
             }
             return new OkResult();
         }
@@ -153,7 +153,7 @@ namespace BotDataSet
                     using (var cont = new BotDBContext())
                     {
                         cont.Users.Update(botUser);
-                        cont.SaveChanges();
+                        await cont.SaveChangesAsync();
                         return new OkResult();
                     }
                 }
@@ -186,8 +186,8 @@ namespace BotDataSet
                     {
                         return new AlreadyResult();
                     }
-                    cont.Friends.Add(new Friends() { UserId = BotUser.UserId, FriendId = friend.UserId });
-                    cont.SaveChanges();
+                    await cont.Friends.AddAsync(new Friends() { UserId = BotUser.UserId, FriendId = friend.UserId });
+                    await cont.SaveChangesAsync();
                     return new OkResult();
                 }
             }
@@ -201,6 +201,21 @@ namespace BotDataSet
                 {
                     throw;
                 }
+            }
+        }
+        public static async Task<ActionResult> AddFriend(this User user, User Friend)
+        {
+            var friend = GetUser(Friend);
+            var BotUser = GetUser(user);
+            using (var cont = new BotDBContext())
+            {
+                if (cont.Friends.Any(x => x.UserId == BotUser.UserId && x.FriendId == friend.UserId))
+                {
+                    return new AlreadyResult();
+                }
+                await cont.Friends.AddAsync(new Friends() { UserId = BotUser.UserId, FriendId = friend.UserId });
+                await cont.SaveChangesAsync();
+                return new OkResult();
             }
         }
         public static async Task<ActionResult> RemoveFriendAsync(this User user, long userId)
@@ -217,7 +232,7 @@ namespace BotDataSet
                     }
                     var fr = cont.Friends.First(x => x.UserId == BotUser.UserId && x.FriendId == friend.UserId);
                     cont.Friends.Remove(fr);
-                    cont.SaveChanges();
+                    await cont.SaveChangesAsync();
                     return new OkResult();
                 }
             }
