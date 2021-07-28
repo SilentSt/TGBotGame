@@ -1,5 +1,7 @@
+using System;
 using System.Threading.Tasks;
 using BotDataSet;
+using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -23,15 +25,24 @@ namespace TGBotGame
 
         public static async Task FillBalance(Amount amount, ITelegramBotClient botClient, Telegram.Bot.Types.User user)
         {
+            ActionResult result;
             switch (amount)
             {
                 case Amount.Five:
                     //donate request
                     if (true)
                     {
-                        MessageSender.SendMessage(botClient, Constants.SUCCESS_FILLING_BALANCE_TEXT, user);
-                        //write into DB
-                    } //all ok
+                        result = await user.AddPointsAsync(5);
+                        if (result is OkResult)
+                        {
+                            MessageSender.SendMessage(botClient, Constants.SUCCESS_FILLING_BALANCE_TEXT, user);
+                        }
+                        else
+                        {
+                            MessageSender.SendMessage(botClient, Constants.UNSUCCESS_FILING_BALANCE_TEXT, user);
+                        }
+                        
+                    }
                     else
                     {
                         MessageSender.SendMessage(botClient, Constants.UNSUCCESS_FILING_BALANCE_TEXT, user);
@@ -42,22 +53,37 @@ namespace TGBotGame
                     //donate request
                     if (true)
                     {
-                        MessageSender.SendMessage(botClient, Constants.SUCCESS_FILLING_BALANCE_TEXT, user);
-                        //write into DB
-                    } //all ok
+                        result = await user.AddPointsAsync(10);
+                        if (result is OkResult)
+                        {
+                            MessageSender.SendMessage(botClient, Constants.SUCCESS_FILLING_BALANCE_TEXT, user);
+                        }
+                        else
+                        {
+                            MessageSender.SendMessage(botClient, Constants.UNSUCCESS_FILING_BALANCE_TEXT, user);
+                        }
+                        
+                    }
                     else
                     {
                         MessageSender.SendMessage(botClient, Constants.UNSUCCESS_FILING_BALANCE_TEXT, user);
                     }
-
                     break;
                 case Amount.Twenty:
                     //donate request
                     if (true)
                     {
-                        MessageSender.SendMessage(botClient, Constants.SUCCESS_FILLING_BALANCE_TEXT, user);
-                        //write into DB
-                    }//all ok
+                        result = await user.AddPointsAsync(20);
+                        if (result is OkResult)
+                        {
+                            MessageSender.SendMessage(botClient, Constants.SUCCESS_FILLING_BALANCE_TEXT, user);
+                        }
+                        else
+                        {
+                            MessageSender.SendMessage(botClient, Constants.UNSUCCESS_FILING_BALANCE_TEXT, user);
+                        }
+                        
+                    }
                     else
                     {
                         MessageSender.SendMessage(botClient, Constants.UNSUCCESS_FILING_BALANCE_TEXT, user);
@@ -69,15 +95,20 @@ namespace TGBotGame
 
         public static async Task RemovePunishment(Punishments punishments, ITelegramBotClient botClient, Telegram.Bot.Types.User user)
         {
+            ActionResult result;
             switch (punishments)
             {
                 case Punishments.Ban:
-                    //get info about credits
-                    if (true)
+                    result = await user.RemovePointsAsync(Constants.BAN_REMOVE_PRICE);
+                    if (result is OkResult)
                     {
                         //unban
                         MessageSender.SendMessage(botClient, Constants.SUCCESS_REMOVED_PUNISHMENT_TEXT, user);
-                    } //if enough 
+                    }
+                    else if (result is BadRequestResult)
+                    {
+                        MessageSender.SendMessage(botClient, Constants.UNSUCCESS_REMOVING_PUNISHMENT, user);
+                    }
                     else
                     {
                         MessageSender.SendMessage(botClient, Constants.NOT_ENOUGH_CREDITS_TEXT, user);
@@ -85,12 +116,16 @@ namespace TGBotGame
 
                     break;
                 case Punishments.Mute:
-                    //get info about credits
-                    if (true)
+                    result = await user.RemovePointsAsync(Constants.MUTE_REMOVE_PRICE);
+                    if (result is OkResult)
                     {
                         //unban
                         MessageSender.SendMessage(botClient, Constants.SUCCESS_REMOVED_PUNISHMENT_TEXT, user);
-                    } //if enough 
+                    }
+                    else if (result is BadRequestResult)
+                    {
+                        MessageSender.SendMessage(botClient, Constants.UNSUCCESS_REMOVING_PUNISHMENT, user);
+                    }
                     else
                     {
                         MessageSender.SendMessage(botClient, Constants.NOT_ENOUGH_CREDITS_TEXT, user);
@@ -98,12 +133,16 @@ namespace TGBotGame
 
                     break;
                 case Punishments.Warn:
-                    //get info about credits
-                    if (true)
+                    result = await user.RemovePointsAsync(Constants.WARN_REMOVE_PRICE);
+                    if (result is OkResult)
                     {
                         //unban
                         MessageSender.SendMessage(botClient, Constants.SUCCESS_REMOVED_PUNISHMENT_TEXT, user);
-                    } //if enough 
+                    }
+                    else if (result is BadRequestResult)
+                    {
+                        MessageSender.SendMessage(botClient, Constants.UNSUCCESS_REMOVING_PUNISHMENT, user);
+                    }
                     else
                     {
                         MessageSender.SendMessage(botClient, Constants.NOT_ENOUGH_CREDITS_TEXT, user);
@@ -131,11 +170,22 @@ namespace TGBotGame
         {
             MessageSender.SendMessage(botClient, Keyboards.PrepareRemoveFriendsList(user), Constants.FRIEND_LIST_TEXT, user);
         }
-        public static async Task RemoveFriend(ITelegramBotClient botClient, long? whomDelete, Telegram.Bot.Types.User user)
+        public static async Task RemoveFriend(ITelegramBotClient botClient, string whomDelete, Telegram.Bot.Types.User user)
         {
-            //remove friend from DB
-            // Я НЕ НАШЕЛ МЕТОДА ДЛЯ ЭТОГО
-            MessageSender.SendMessage(botClient, Constants.FRIEND_REMOVED_TEXT, user);
+            ActionResult result;
+            result = await user.RemoveFriendAsync(whomDelete);
+            if (result is OkResult)
+            {
+                MessageSender.SendMessage(botClient, Constants.FRIEND_REMOVED_TEXT, user);
+            }
+            else if (result is Assist.AlreadyResult)
+            {
+                MessageSender.SendMessage(botClient, Constants.FRIEND_REMOVED_ALREADY, user);
+            }
+            else
+            {
+                MessageSender.SendMessage(botClient, Constants.FRIEND_REMOVED_EXCEPTION, user);
+            }
         }
 
         public static async Task VokeToNextGame(ITelegramBotClient botClient, Telegram.Bot.Types.User user)

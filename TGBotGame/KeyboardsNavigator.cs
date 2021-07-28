@@ -1,3 +1,4 @@
+using BotDataSet;
 using Telegram.Bot;
 
 namespace TGBotGame
@@ -28,8 +29,7 @@ namespace TGBotGame
 
         public void PushToPunishment(ITelegramBotClient botClient, Telegram.Bot.Types.User user)
         {
-            //get balance from DB
-            var balance = 0;
+            var balance = user.GetPoints();
             MessageSender.SendMessage(botClient, Keyboards.PrepareRemovePunishmentKeyboard(), Constants.PUNISHMENT_TEXT + balance, user);
             Handlers.users[user.Id].curState = CurentState.Punishment;
         }

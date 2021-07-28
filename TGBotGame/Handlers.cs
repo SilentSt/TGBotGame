@@ -167,7 +167,7 @@ namespace TGBotGame
                 users[callbackQuery.Message.Chat.Id].curState == KeyboardsNavigator.CurentState.Friends
                 )
             {
-                long? whomDelete = long.Parse(callbackQuery.Data);
+                string whomDelete = callbackQuery.Data;
                 //in inline keyboard you`ll see names of users, but in data will be there chat id`s
                 await PrivateChatFunctions.RemoveFriend(botClient, whomDelete, callbackQuery.From);
             }
