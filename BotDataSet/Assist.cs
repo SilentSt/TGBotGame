@@ -29,7 +29,7 @@ namespace BotDataSet
             {
                 if (cont.Users.Any(x => x.UserId == user.Id))
                 {
-                    return cont.Users.FirstOrDefault(x => x.UserName == user.Username);
+                    return cont.Users.FirstOrDefault(x => x.UserId == user.Id);
                 }
                 else
                 {
@@ -39,7 +39,6 @@ namespace BotDataSet
                 }
             }
         }
-
         private static BotUser GetUser(string UserName)
         {
             using (BotDBContext cont = new BotDBContext())
@@ -47,6 +46,20 @@ namespace BotDataSet
                 if (cont.Users.Any(x => x.UserName == UserName))
                 {
                     return cont.Users.FirstOrDefault(x => x.UserName == UserName);
+                }
+                else
+                {
+                    throw new Exception("404");
+                }
+            }
+        }
+        private static BotUser GetUser(long userId)
+        {
+            using (BotDBContext cont = new BotDBContext())
+            {
+                if (cont.Users.Any(x => x.UserId == userId))
+                {
+                    return cont.Users.FirstOrDefault(x => x.UserId == userId);
                 }
                 else
                 {
@@ -153,11 +166,11 @@ namespace BotDataSet
             }
         }
 
-        public static async Task<ActionResult> RemoveFriendAsync(this User user, string UserName)
+        public static async Task<ActionResult> RemoveFriendAsync(this User user, long userId)
         {
             try
             {
-                var friend = GetUser(UserName);
+                var friend = GetUser(userId);
                 var BotUser = GetUser(user);
                 using (var cont = new BotDBContext())
                 {
