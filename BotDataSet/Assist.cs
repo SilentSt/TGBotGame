@@ -71,12 +71,10 @@ namespace BotDataSet
         {
             return GetUser(user).IsMuted;
         }
-
         public static bool IsUserBanned(this User user)
         {
             return GetUser(user).IsBanned;
         }
-
         public static int GetUserWarnCount(this User user)
         {
             return GetUser(user).Warns.Count;
@@ -85,7 +83,46 @@ namespace BotDataSet
         {
             return GetUser(user).Warns.Select(x => x.Reason).ToList();
         }
-
+        public static async Task<ActionResult> AddWarn(this User user, string reason)
+        {
+            if (!string.IsNullOrWhiteSpace(reason))
+            {
+                var botuser = GetUser(user);
+                if (botuser.Warns.Count == 3)
+                {
+                    return new AlreadyResult();
+                }
+                using (var cont = new BotDBContext())
+                {
+                    await cont.Warns.AddAsync(new Warn()
+                    {
+                        UserId = user.Id,
+                        Reason = reason
+                    });
+                    await cont.SaveChangesAsync();
+                    return new OkResult();
+                }
+            }
+            else
+            {
+                return new BadRequestResult();
+            }
+        }
+        public static async Task<ActionResult> RemoveWarn(this User user)
+        {
+            var botUser = GetUser(user);
+            if(botUser.Warns.Count < 1)
+            {
+                return new AlreadyResult();
+            }
+            using (var cont = new BotDBContext())
+            {
+                var warn = cont.Warns.OrderBy(x => x.Id).First();
+                cont.Warns.Remove(warn);
+                await cont.SaveChangesAsync();
+                return new OkResult();
+            }
+        }
         public static uint GetPoints(this User user)
         {
             return GetUser(user).Points;
@@ -94,7 +131,7 @@ namespace BotDataSet
         {
             var botUser = GetUser(user);
             botUser.Points += value;
-            using(var cont =  new BotDBContext())
+            using (var cont = new BotDBContext())
             {
                 cont.Users.Update(botUser);
                 cont.SaveChanges();
@@ -123,12 +160,10 @@ namespace BotDataSet
             }
             return new BadRequestResult();
         }
-
         public static long GetChatId(this User user)
         {
             return GetUser(user).UserId;
         }
-
         public static IEnumerable<BotUser> GetFriendsList(this User user)
         {
             var botuser = GetUser(user);
@@ -139,16 +174,15 @@ namespace BotDataSet
                 return result;
             }
         }
-
         public static async Task<ActionResult> AddFriend(this User user, string UserName)
         {
             try
             {
                 var friend = GetUser(UserName);
                 var BotUser = GetUser(user);
-                using(var cont =  new BotDBContext())
+                using (var cont = new BotDBContext())
                 {
-                    if(cont.Friends.Any(x => x.UserId == BotUser.UserId && x.FriendId == friend.UserId))
+                    if (cont.Friends.Any(x => x.UserId == BotUser.UserId && x.FriendId == friend.UserId))
                     {
                         return new AlreadyResult();
                     }
@@ -169,7 +203,6 @@ namespace BotDataSet
                 }
             }
         }
-
         public static async Task<ActionResult> RemoveFriendAsync(this User user, long userId)
         {
             try
