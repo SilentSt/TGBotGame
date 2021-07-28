@@ -16,9 +16,19 @@ namespace BotDataSet
         public uint Points { get; set; } = 0;
         public bool IsBanned { get; set; } = false;
         public bool IsMuted { get; set; } = false;
-        public byte WarnCount { get; set; } = 0;
         public string MuteReason { get; set; }
         public string BanReason { get; set; }
+        public virtual List<Warn> Warns{ get; set; }
+    }
+    public class Warn
+    {
+        [Key]
+        public int Id { get; set; }
+        [Required]
+        public string Reason { get; set; }
+        public long UserId { get; set;}
+        [ForeignKey("UserId")]
+        public virtual BotUser User { get; set; }
 
     }
     public class Friends

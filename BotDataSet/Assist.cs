@@ -77,9 +77,13 @@ namespace BotDataSet
             return GetUser(user).IsBanned;
         }
 
-        public static byte GetUserWarnCount(this User user)
+        public static int GetUserWarnCount(this User user)
         {
-            return GetUser(user).WarnCount;
+            return GetUser(user).Warns.Count;
+        }
+        public static List<string> GetUserWarnsReasons(this User user)
+        {
+            return GetUser(user).Warns.Select(x => x.Reason).ToList();
         }
 
         public static uint GetPoints(this User user)

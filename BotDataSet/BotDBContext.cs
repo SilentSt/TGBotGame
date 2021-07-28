@@ -26,5 +26,6 @@ namespace BotDataSet
         }
         public DbSet<BotUser> Users { get; set; }
         public DbSet<Friends> Friends { get; set; }
+        public DbSet<Warn> Warns { get; set; }
     }
 }
