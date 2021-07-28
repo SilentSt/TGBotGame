@@ -2,8 +2,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Telegram.Bot.Types;
@@ -11,6 +13,7 @@ namespace BotDataSet
 {
     public static class Assist
     {
+        public static Regex PhoneValidation = new Regex(@"^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$");
         public class NotFoundResult : ActionResult
         {
             public string Content { get; } = "Not found";
@@ -248,5 +251,43 @@ namespace BotDataSet
                 }
             }
         }
+        public static async Task<Payment> AddPayment(string phone, uint sum)
+        {
+            if (sum % 50 != 0) throw new Exception("Invalid sum");
+            if (!PhoneValidation.IsMatch(phone)) throw new Exception("Invalid number");
+            var rId = (new Random()).Next(1000000, 9999999);
+            using (var cont = new BotDBContext())
+            {
+                while (cont.Payments.Any(x => x.RId == rId))
+                {
+                    rId = (new Random()).Next(1000000, 9999999);
+                }
+                if (cont.Payments.All(x => x.RId != rId))
+                {
+                    var paym = new Payment() { RId = (uint)rId };
+                    await cont.Payments.AddAsync(paym);
+                    await cont.SaveChangesAsync();
+                    return paym;
+                }
+            }
+            throw new Exception("Something went wrong");
+        }
+        public static async Task<ActionResult> RemovePayment(this Payment payment)
+        {
+            using (var cont = new BotDBContext())
+            {
+                if (cont.Payments.Any(x => x.Equals(payment)))
+                {
+                    cont.Payments.Remove(payment);
+                    await cont.SaveChangesAsync();
+                    return new OkResult();
+                }
+                else
+                {
+                    return new NotFoundResult();
+                }
+            }
+        }
+
     }
 }

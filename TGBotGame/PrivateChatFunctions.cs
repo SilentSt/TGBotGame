@@ -232,11 +232,11 @@ namespace TGBotGame
 
                     break;
                 case Punishments.Warn:
-                    var warn = user.GetUser().WarnCount;
+                    var warn = user.GetUserWarnCount();
                     //get warn reason from DB
                     if (warn>0)
                     {
-                        string reason = "У тебя есть "+user.GetUser().WarnCount+"варнов: "+""/*WARN REASONS*/;
+                        string reason = "У тебя есть "+user.GetUserWarnCount()+"варнов: \n"+String.Join("\n",user.GetUserWarnsReasons());
                         MessageSender.SendMessage(botClient, reason, user);
                         Handlers.users[user.Id].keyboardNavigator.PopToMenu(botClient, user);
                     }

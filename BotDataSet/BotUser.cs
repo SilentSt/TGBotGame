@@ -43,4 +43,11 @@ namespace BotDataSet
         [ForeignKey("FriendId")]
         public virtual BotUser Friend {  get; set; }
     }
+    public class Payment
+    {
+        [Key]
+        public uint RId { get; set; }
+        public uint Sum { get; set; }
+        public string Phone { get; set; }
+    }
 }
