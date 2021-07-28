@@ -26,6 +26,12 @@ namespace TGBotGame
         public const string NO_MUTES_TEXT = "У тебя нет мута, играй и общайся спокойно!";
         public const string NO_BANS_TEXT = "Тебя не выгоняли, заходи в игру.";
         public const string FRIEND_REMOVED_TEXT = "Готово, вы больше не друзья!";
+
+        public const string FRIEND_REMOVED_ALREADY =
+            "Произошла какая-то ошибка, данного пользователя не было у вас в друзьях";
+
+        public const string FRIEND_REMOVED_EXCEPTION =
+            "Что-то пошло не так, попробуйте удалить этого пользователя из друзей позже";
         public const string SUCCESS_REMOVED_PUNISHMENT_TEXT = "Готово! :)";
         public const string NOT_ENOUGH_CREDITS_TEXT = "Недостаточно кредитов!";
 
@@ -33,5 +39,9 @@ namespace TGBotGame
             "После оплаты автоматическое зачисление на счёт в течение 15 минут";
 
         public const string UNSUCCESS_FILING_BALANCE_TEXT = "Что-то пошло не так, попробуйте пополнить баланс позже";
+        public const string UNSUCCESS_REMOVING_PUNISHMENT = "Что-то пошло не так, попробуйте снять наказание позже";
+        public const int BAN_REMOVE_PRICE = 16;
+        public const int WARN_REMOVE_PRICE = 5;
+        public const int MUTE_REMOVE_PRICE = 7;
     }
 }

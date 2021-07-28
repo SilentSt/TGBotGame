@@ -140,7 +140,7 @@ namespace TGBotGame
             {
                 var btn = new InlineKeyboardButton();
                 btn.Text = friend.UserName;
-                btn.CallbackData = friend.UserId.ToString();
+                btn.CallbackData = friend.UserName;
                 users.Add(btn);
             }
 
