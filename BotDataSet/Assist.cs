@@ -56,7 +56,7 @@ namespace BotDataSet
                 }
             }
         }
-        private static BotUser GetUser(long userId)
+        public static BotUser GetUser(long userId)
         {
             using (BotDBContext cont = new BotDBContext())
             {
