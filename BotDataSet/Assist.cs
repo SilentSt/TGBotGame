@@ -56,7 +56,7 @@ namespace BotDataSet
                 }
             }
         }
-        public static BotUser GetUser(long userId)
+        private static BotUser GetUser(long userId)
         {
             using (BotDBContext cont = new BotDBContext())
             {
@@ -70,7 +70,7 @@ namespace BotDataSet
                 }
             }
         }
-        public static void Mute(this User user, DateTime? unMuteDate = null)
+        public static void Mute(this User user, string reason = null, DateTime? unMuteDate = null)
         {
             var botUser = GetUser(user);
             botUser.IsMuted = true;
@@ -78,29 +78,63 @@ namespace BotDataSet
             {
                 botUser.UnMutedDate = (DateTime)unMuteDate;
             }
+            if(reason != null)
+            {
+                botUser.MuteReason = reason;
+            }
             using (var cont = new BotDBContext())
             {
                 cont.Users.Update(botUser);
                 cont.SaveChanges();
             }
         }
-        public static void Mute(this BotUser botUser, DateTime? unMuteDate = null)
+        public static void Mute(this BotUser botUser, string reason = null, DateTime? unMuteDate = null)
         {
             botUser.IsMuted = true;
             if (unMuteDate != null)
             {
                 botUser.UnMutedDate = (DateTime)unMuteDate;
             }
+            if (reason != null)
+            {
+                botUser.MuteReason = reason;
+            }
             using (var cont = new BotDBContext())
             {
                 cont.Users.Update(botUser);
                 cont.SaveChanges();
             }
         }
-        public static void Mute(long id, DateTime? unMuteDate = null)
+        public static void Mute(long id, string reason = null, DateTime? unMuteDate = null)
         {
             var botUser = GetUser(id);
-            botUser.Mute(unMuteDate);
+            botUser.Mute(reason,unMuteDate);
+        }
+        public static void UnMute(this User user)
+        {
+            var botUser = GetUser(user);
+            botUser.IsMuted = false;
+            botUser.UnMutedDate = null;
+            using (var cont = new BotDBContext())
+            {
+                cont.Users.Update(botUser);
+                cont.SaveChanges();
+            }
+        }
+        public static void UnMute(this BotUser botUser)
+        {
+            botUser.IsMuted = false;
+            botUser.UnMutedDate = null;
+            using (var cont = new BotDBContext())
+            {
+                cont.Users.Update(botUser);
+                cont.SaveChanges();
+            }
+        }
+        public static void UnMute(long id)
+        {
+            var botUser = GetUser(id);
+            botUser.UnMute();
         }
         public static bool IsUserMuted(this User user)
         {
@@ -110,7 +144,7 @@ namespace BotDataSet
         {
             return GetUser(user).UnMutedDate;
         }
-        public static void Ban(this User user, DateTime? unBanDate = null)
+        public static void Ban(this User user, string reason = null, DateTime? unBanDate = null)
         {
             var botUser = GetUser(user);
             botUser.IsBanned = true;
@@ -118,29 +152,63 @@ namespace BotDataSet
             {
                 botUser.UnBanDate = (DateTime)unBanDate;
             }
+            if (reason != null)
+            {
+                botUser.BanReason = reason;
+            }
             using (var cont = new BotDBContext())
             {
                 cont.Users.Update(botUser);
                 cont.SaveChanges();
             }
         }
-        public static void Ban(this BotUser botUser, DateTime? unBanDate = null)
+        public static void Ban(this BotUser botUser, string reason = null, DateTime? unBanDate = null)
         {
             botUser.IsBanned = true;
             if (unBanDate != null)
             {
                 botUser.UnBanDate = (DateTime)unBanDate;
             }
+            if (reason != null)
+            {
+                botUser.BanReason = reason;
+            }
             using (var cont = new BotDBContext())
             {
                 cont.Users.Update(botUser);
                 cont.SaveChanges();
             }
         }
-        public static void Ban(long id, DateTime? unBanDate = null)
+        public static void Ban(long id, string reason = null, DateTime? unBanDate = null)
         {
             var botUser = GetUser(id);
-            botUser.Ban(unBanDate);
+            botUser.Ban(reason, unBanDate);
+        }
+        public static void UnBan(this User user)
+        {
+            var botUser = GetUser(user);
+            botUser.IsBanned = false;
+            botUser.UnBanDate = null;
+            using (var cont = new BotDBContext())
+            {
+                cont.Users.Update(botUser);
+                cont.SaveChanges();
+            }
+        }
+        public static void UnBan(this BotUser botUser)
+        {
+            botUser.IsBanned = false;
+            botUser.UnBanDate = null;
+            using (var cont = new BotDBContext())
+            {
+                cont.Users.Update(botUser);
+                cont.SaveChanges();
+            }
+        }
+        public static void UnBan(long id)
+        {
+            var botUser = GetUser(id);
+            botUser.UnBan();
         }
         public static bool IsUserBanned(this User user)
         {
@@ -158,29 +226,40 @@ namespace BotDataSet
         {
             return GetUser(user).Warns.Select(x => x.Reason).ToList();
         }
-        public static async Task<ActionResult> AddWarn(this User user, string reason)
+        public static async Task<ActionResult> AddWarn(this User user, string reason = null)
         {
-            if (!string.IsNullOrWhiteSpace(reason))
+            var botuser = GetUser(user);
+            if (botuser.Warns.Count == 3)
             {
-                var botuser = GetUser(user);
-                if (botuser.Warns.Count == 3)
-                {
-                    return new AlreadyResult();
-                }
-                using (var cont = new BotDBContext())
-                {
-                    await cont.Warns.AddAsync(new Warn()
-                    {
-                        UserId = user.Id,
-                        Reason = reason
-                    });
-                    await cont.SaveChangesAsync();
-                    return new OkResult();
-                }
+                return new AlreadyResult();
             }
-            else
+            using (var cont = new BotDBContext())
             {
-                return new BadRequestResult();
+                await cont.Warns.AddAsync(new Warn()
+                {
+                    UserId = user.Id,
+                    Reason = string.IsNullOrWhiteSpace(reason) ? "Not found" : reason
+                });
+                await cont.SaveChangesAsync();
+                return new OkResult();
+            }
+        }
+        public static async Task<ActionResult> AddWarn(long id, string reason = null)
+        {
+            var botuser = GetUser(id);
+            if (botuser.Warns.Count == 3)
+            {
+                return new AlreadyResult();
+            }
+            using (var cont = new BotDBContext())
+            {
+                await cont.Warns.AddAsync(new Warn()
+                {
+                    UserId = botuser.UserId,
+                    Reason = string.IsNullOrWhiteSpace(reason) ? "Not found" : reason
+                });
+                await cont.SaveChangesAsync();
+                return new OkResult();
             }
         }
         public static async Task<ActionResult> RemoveWarn(this User user)
@@ -362,7 +441,7 @@ namespace BotDataSet
         }
         public static void Save(this BotUser user)
         {
-            using(var cont  = new BotDBContext())
+            using (var cont = new BotDBContext())
             {
                 cont.Users.Update(user);
                 cont.SaveChanges();
