@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using QiwiApi.Events;
 using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
 

@@ -29,7 +29,7 @@ namespace BotTesting
             Console.WriteLine(u.UserId);
             user.GetFriendsList().ToList().ForEach(x => Console.WriteLine(x.UserName));
             */
-            var qiwi = new QiwiApi.Qiwi("79613265172","604b8f27f435fd83e7d0e11a16eb648d");
+            var qiwi = new QiwiApi.Qiwi("79185617179","572d68e7f687c369faa28bf9b5636251");
             var hs = await qiwi.GetHistoryAsync();
             Console.WriteLine(hs.Payments.FirstOrDefault().Sum);
         }
