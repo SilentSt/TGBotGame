@@ -15,7 +15,9 @@ namespace BotDataSet
         public string UserName { get; set; }
         public uint Points { get; set; } = 0;
         public bool IsBanned { get; set; } = false;
+        public DateTime? UnBanDate { get; set; }
         public bool IsMuted { get; set; } = false;
+        public DateTime? UnMutedDate { get; set; }
         public string MuteReason { get; set; }
         public string BanReason { get; set; }
         public virtual List<Warn> Warns{ get; set; }

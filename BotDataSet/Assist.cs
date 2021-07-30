@@ -70,13 +70,49 @@ namespace BotDataSet
                 }
             }
         }
+        public static void Mute(this User user, DateTime? unMuteDate = null)
+        {
+            var botUser = GetUser(user);
+            botUser.IsMuted = true;
+            if (unMuteDate != null)
+            {
+                botUser.UnMutedDate = (DateTime)unMuteDate;
+            }
+            using (var cont = new BotDBContext())
+            {
+                cont.Users.Update(botUser);
+                cont.SaveChanges();
+            }
+        }
         public static bool IsUserMuted(this User user)
         {
             return GetUser(user).IsMuted;
         }
+        public static DateTime? GetUnMuteDate(this User user)
+        {
+            return GetUser(user).UnMutedDate;
+        }
+        public static void Ban(this User user, DateTime? unBanDate = null)
+        {
+            var botUser = GetUser(user);
+            botUser.IsBanned = true;
+            if (unBanDate != null)
+            {
+                botUser.UnBanDate = (DateTime)unBanDate;
+            }
+            using (var cont = new BotDBContext())
+            {
+                cont.Users.Update(botUser);
+                cont.SaveChanges();
+            }
+        }
         public static bool IsUserBanned(this User user)
         {
             return GetUser(user).IsBanned;
+        }
+        public static DateTime? GetUnBanDate(this User user)
+        {
+            return GetUser(user).UnBanDate;
         }
         public static int GetUserWarnCount(this User user)
         {
@@ -288,6 +324,13 @@ namespace BotDataSet
                 }
             }
         }
-
+        public static void Save(this BotUser user)
+        {
+            using(var cont  = new BotDBContext())
+            {
+                cont.Users.Update(user);
+                cont.SaveChanges();
+            }
+        }
     }
 }
