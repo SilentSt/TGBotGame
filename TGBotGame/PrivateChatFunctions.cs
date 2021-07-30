@@ -170,7 +170,7 @@ namespace TGBotGame
         {
             MessageSender.SendMessage(botClient, Keyboards.PrepareRemoveFriendsList(user), Constants.FRIEND_LIST_TEXT, user);
         }
-        public static async Task RemoveFriend(ITelegramBotClient botClient, string whomDelete, Telegram.Bot.Types.User user)
+        public static async Task RemoveFriend(ITelegramBotClient botClient, long whomDelete, Telegram.Bot.Types.User user)
         {
             ActionResult result;
             result = await user.RemoveFriendAsync(whomDelete);
@@ -233,10 +233,9 @@ namespace TGBotGame
                     break;
                 case Punishments.Warn:
                     var warn = user.GetUserWarnCount();
-                    //get warn reason from DB
                     if (warn>0)
                     {
-                        string reason = "У тебя есть "+user.GetUserWarnCount()+"варнов: \n"+String.Join("\n",user.GetUserWarnsReasons());
+                        string reason = "У тебя есть "+user.GetUserWarnCount()+" варнов: \n"+String.Join("\n",user.GetUserWarnsReasons());
                         MessageSender.SendMessage(botClient, reason, user);
                         Handlers.users[user.Id].keyboardNavigator.PopToMenu(botClient, user);
                     }

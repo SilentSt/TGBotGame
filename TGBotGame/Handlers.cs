@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using BotDataSet;
+using QiwiApi;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
@@ -167,7 +168,7 @@ namespace TGBotGame
                 users[callbackQuery.Message.Chat.Id].curState == KeyboardsNavigator.CurentState.Friends
                 )
             {
-                string whomDelete = callbackQuery.Data;
+                long whomDelete = long.Parse(callbackQuery.Data);
                 //in inline keyboard you`ll see names of users, but in data will be there chat id`s
                 await PrivateChatFunctions.RemoveFriend(botClient, whomDelete, callbackQuery.From);
             }
