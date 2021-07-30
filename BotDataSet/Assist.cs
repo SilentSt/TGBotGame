@@ -84,6 +84,24 @@ namespace BotDataSet
                 cont.SaveChanges();
             }
         }
+        public static void Mute(this BotUser botUser, DateTime? unMuteDate = null)
+        {
+            botUser.IsMuted = true;
+            if (unMuteDate != null)
+            {
+                botUser.UnMutedDate = (DateTime)unMuteDate;
+            }
+            using (var cont = new BotDBContext())
+            {
+                cont.Users.Update(botUser);
+                cont.SaveChanges();
+            }
+        }
+        public static void Mute(long id, DateTime? unMuteDate = null)
+        {
+            var botUser = GetUser(id);
+            botUser.Mute(unMuteDate);
+        }
         public static bool IsUserMuted(this User user)
         {
             return GetUser(user).IsMuted;
@@ -105,6 +123,24 @@ namespace BotDataSet
                 cont.Users.Update(botUser);
                 cont.SaveChanges();
             }
+        }
+        public static void Ban(this BotUser botUser, DateTime? unBanDate = null)
+        {
+            botUser.IsBanned = true;
+            if (unBanDate != null)
+            {
+                botUser.UnBanDate = (DateTime)unBanDate;
+            }
+            using (var cont = new BotDBContext())
+            {
+                cont.Users.Update(botUser);
+                cont.SaveChanges();
+            }
+        }
+        public static void Ban(long id, DateTime? unBanDate = null)
+        {
+            var botUser = GetUser(id);
+            botUser.Ban(unBanDate);
         }
         public static bool IsUserBanned(this User user)
         {
