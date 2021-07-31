@@ -40,6 +40,8 @@ namespace TGBotGame
 
         public const string UNSUCCESS_FILING_BALANCE_TEXT = "Что-то пошло не так, попробуйте пополнить баланс позже";
         public const string UNSUCCESS_REMOVING_PUNISHMENT = "Что-то пошло не так, попробуйте снять наказание позже";
+        public const string VOKE_FRIENDS_PLAY_TEXT = "Привет, тебя зовет играть ";
+        public const string SUCCESS_ADD_FRIEND_TEXT = "Теперь этот пользователь у вас в друзьях";
         public const int BAN_REMOVE_PRICE = 16;
         public const int WARN_REMOVE_PRICE = 5;
         public const int MUTE_REMOVE_PRICE = 7;

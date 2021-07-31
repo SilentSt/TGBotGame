@@ -1,3 +1,4 @@
+using BotDataSet;
 using Telegram.Bot;
 using Telegram.Bot.Types.ReplyMarkups;
 
@@ -26,6 +27,20 @@ namespace TGBotGame
             botClient.SendTextMessageAsync(user.Id,
                 message,
                 replyMarkup:keyboard
+            );
+        }
+
+        public static void SendMessage(ITelegramBotClient botClient, string message, long chatId)
+        {
+            botClient.SendTextMessageAsync(chatId,
+                message
+            );
+        }
+
+        public static void SendMessage(ITelegramBotClient botClient, string message, BotUser botUser)
+        {
+            botClient.SendTextMessageAsync(botUser.UserId,
+                message
             );
         }
     }

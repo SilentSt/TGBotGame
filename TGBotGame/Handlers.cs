@@ -72,7 +72,7 @@ namespace TGBotGame
                 {
                     "/next" => GroupFunctions.CreateRequestNextGame(botClient, message),
                     "/gift" => GroupFunctions.SendGiftToFriend(botClient, message),
-                    "/friends" => GroupFunctions.ShowFriends(botClient, message),
+                    "/friends" => GroupFunctions.AddFriend(botClient, message),
                     "/friendsplay" => GroupFunctions.VokeFriendsPlay(botClient, message),
                     "/delfriends" => GroupFunctions.DeleteFriend(botClient, message),
                     "/help" => SendHelpMessage(botClient, message),

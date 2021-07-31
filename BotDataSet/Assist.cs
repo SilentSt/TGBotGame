@@ -83,7 +83,7 @@ namespace BotDataSet
                 }
             }
         }
-        private static BotUser GetUser(string UserName)
+        public static BotUser GetUser(string UserName)
         {
             using (BotDBContext cont = new BotDBContext())
             {
@@ -303,9 +303,9 @@ namespace BotDataSet
                 return new OkResult();
             }
         }
-        public static async Task<ActionResult> RemoveWarn(this User user)
+        public static async Task<ActionResult> RemoveWarn(long id)
         {
-            var botUser = GetUser(user);
+            var botUser = GetUser(id);
             if (botUser.Warns.Count < 1)
             {
                 return new AlreadyResult();
