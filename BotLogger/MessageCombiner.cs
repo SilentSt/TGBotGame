@@ -25,20 +25,20 @@ namespace BotLogger
                 switch(message.Split(' ')[1].Split('\n')[1].ToLower().Split('#')[1])
                 {
                     case "ban":
-                        Assist.Ban(Assist.GetUser(long.Parse(whomId)), DateTime.Now, );
+                        Assist.Ban(long.Parse(whomId), GetReason(message) );
                         break;
-                    case "unban":
-                        //Assist. (Assist.GetUser(long.Parse(whomId)));
-                        break;
+                    /*case "unban":
+                        Assist.UnBan(long.Parse(whomId));
+                        break;*/
                     case "заглушить":
-                        Assist.Mute(Assist.GetUser(long.Parse(whomId)), DateTime.Now, );
+                        Assist.Mute(long.Parse(whomId),GetReason(message));
                         break;
                     case "предупреждать_редактировать":
-                        Assist.AddWarn(Assist.GetUser(long.Parse(whomId)), GetReason(message));
+                        Assist.AddWarn(long.Parse(whomId), GetReason(message));
                         break;
-                    case "warn_reset":
-                        
-                        break;
+                    /*case "warn_reset":
+                        Assist.RemoveWarn(long.Parse(whomId));
+                        break;*/
                     case "новый_пользователь":
                         whomId = GetUserId(message, 2);
                         //Assist.
