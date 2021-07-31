@@ -30,8 +30,16 @@ namespace BotTesting
             user.GetFriendsList().ToList().ForEach(x => Console.WriteLine(x.UserName));
             */
             var qiwi = new QiwiApi.Qiwi("79185617179","572d68e7f687c369faa28bf9b5636251");
-            var hs = await qiwi.GetHistoryAsync();
-            Console.WriteLine(hs.Payments.FirstOrDefault().Sum);
+            qiwi.OnIncomingPayment += Qiwi_OnIncomingPayment;
+            qiwi.StartHistoryPolling(TimeSpan.FromMinutes(5));
+            
+            Console.ReadKey();
+            //Console.WriteLine(hs.Payments.FirstOrDefault().Sum);
+        }
+
+        private static void Qiwi_OnIncomingPayment(object sender, PaymentEventArgs e)
+        {
+            Console.WriteLine(e.Payment.Account);
         }
     }
 }

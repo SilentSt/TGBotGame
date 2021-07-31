@@ -13,6 +13,7 @@ namespace BotDataSet
         public long UserId { get; set; }
         [Required]
         public string UserName { get; set; }
+        public bool NextGame { get; set; }
         public uint Points { get; set; } = 0;
         public bool IsBanned { get; set; } = false;
         public DateTime? UnBanDate { get; set; }

@@ -34,7 +34,7 @@ namespace BotDataSet
         /// <returns></returns>
         public static async Task<ActionResult> AddUser(long id)
         {
-            using(var cont = new BotDBContext())
+            using (var cont = new BotDBContext())
             {
                 if (cont.Users.Any(x => x.UserId == id))
                 {
@@ -54,7 +54,7 @@ namespace BotDataSet
                 {
                     return new AlreadyResult();
                 }
-                var newUser = new BotUser() { UserId = user.Id, UserName=user.Username };
+                var newUser = new BotUser() { UserId = user.Id, UserName = user.Username };
                 await cont.Users.AddAsync(newUser);
                 await cont.SaveChangesAsync();
                 return new OkResult();
@@ -67,7 +67,7 @@ namespace BotDataSet
                 if (cont.Users.Any(x => x.UserId == user.Id))
                 {
                     var botuser = cont.Users.FirstOrDefault(x => x.UserId == user.Id);
-                    if(botuser.UserName != user.Username)
+                    if (botuser.UserName != user.Username)
                     {
                         botuser.UserName = user.Username;
                         cont.Users.Update(botuser);
@@ -111,6 +111,67 @@ namespace BotDataSet
                 }
             }
         }
+        public static List<BotUser> GetNextGameUsers()
+        {
+            using (var cont = new BotDBContext())
+            {
+                return cont.Users.Where(x => x.NextGame).ToList();
+            }
+        }
+        public static async Task<ActionResult> RemoveNextGame(this List<BotUser> botUsers)
+        {
+            await Task.Run(() => {
+                botUsers.ForEach(async user =>
+                {
+                    _ = await user.RemoveNextGame();
+                });
+            });
+            return new OkResult();
+        }
+        public static async Task<ActionResult> RemoveNextGame(this User user)
+        {
+            var botUser = GetUser(user);
+            if (!botUser.NextGame) 
+            { 
+                return new AlreadyResult(); 
+            }
+            botUser.NextGame = false;
+            using (var cont = new BotDBContext())
+            {
+                cont.Users.Update(botUser);
+                await cont.SaveChangesAsync();
+                return new OkResult();
+            }
+        }
+        public static async Task<ActionResult> RemoveNextGame(this BotUser botUser)
+        {
+            if (!botUser.NextGame)
+            {
+                return new AlreadyResult();
+            }
+            botUser.NextGame = false;
+            using (var cont = new BotDBContext())
+            {
+                cont.Users.Update(botUser);
+                await cont.SaveChangesAsync();
+                return new OkResult();
+            }
+        }
+        public static async Task<ActionResult> AddNextGame(this User user)
+        {
+            var botUser = GetUser(user);
+            if (botUser.NextGame)
+            {
+                return new AlreadyResult();
+            }
+            botUser.NextGame = true;
+            using (var cont = new BotDBContext())
+            {
+                cont.Users.Update(botUser);
+                await cont.SaveChangesAsync();
+                return new OkResult();
+            }
+        }
         public static void Mute(this User user, string reason = null, DateTime? unMuteDate = null)
         {
             var botUser = GetUser(user);
@@ -119,7 +180,7 @@ namespace BotDataSet
             {
                 botUser.UnMutedDate = (DateTime)unMuteDate;
             }
-            if(reason != null)
+            if (reason != null)
             {
                 botUser.MuteReason = reason;
             }
@@ -149,7 +210,7 @@ namespace BotDataSet
         public static void Mute(long id, string reason = null, DateTime? unMuteDate = null)
         {
             var botUser = GetUser(id);
-            botUser.Mute(reason,unMuteDate);
+            botUser.Mute(reason, unMuteDate);
         }
         public static void UnMute(this User user)
         {
@@ -480,11 +541,11 @@ namespace BotDataSet
                 }
             }
         }
-        public static void Save(this BotUser user)
+        public static void Save(this BotUser botUser)
         {
             using (var cont = new BotDBContext())
             {
-                cont.Users.Update(user);
+                cont.Users.Update(botUser);
                 cont.SaveChanges();
             }
         }
