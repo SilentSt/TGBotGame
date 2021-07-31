@@ -26,13 +26,54 @@ namespace BotDataSet
         {
             public string Content { get; } = "Not enough points";
         }
+        /// <summary>
+        /// <br>TAKE CARE</br>
+        /// <br>Users added by this method cannot be added as a freind.</br>
+        /// </summary>
+        /// <param name="id">UserId</param>
+        /// <returns></returns>
+        public static async Task<ActionResult> AddUser(long id)
+        {
+            using(var cont = new BotDBContext())
+            {
+                if (cont.Users.Any(x => x.UserId == id))
+                {
+                    return new AlreadyResult();
+                }
+                var newUser = new BotUser() { UserId = id };
+                await cont.Users.AddAsync(newUser);
+                await cont.SaveChangesAsync();
+                return new OkResult();
+            }
+        }
+        public static async Task<ActionResult> AddUser(this User user)
+        {
+            using (var cont = new BotDBContext())
+            {
+                if (cont.Users.Any(x => x.UserId == user.Id))
+                {
+                    return new AlreadyResult();
+                }
+                var newUser = new BotUser() { UserId = user.Id, UserName=user.Username };
+                await cont.Users.AddAsync(newUser);
+                await cont.SaveChangesAsync();
+                return new OkResult();
+            }
+        }
         public static BotUser GetUser(this User user)
         {
             using (BotDBContext cont = new BotDBContext())
             {
                 if (cont.Users.Any(x => x.UserId == user.Id))
                 {
-                    return cont.Users.FirstOrDefault(x => x.UserId == user.Id);
+                    var botuser = cont.Users.FirstOrDefault(x => x.UserId == user.Id);
+                    if(botuser.UserName != user.Username)
+                    {
+                        botuser.UserName = user.Username;
+                        cont.Users.Update(botuser);
+                        cont.SaveChanges();
+                    }
+                    return botuser;
                 }
                 else
                 {
