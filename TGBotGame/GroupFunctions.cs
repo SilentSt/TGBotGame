@@ -29,6 +29,10 @@ namespace TGBotGame
         public static async Task AddFriend(ITelegramBotClient botClient, Message message)
         {
             var whom = message.Text.Split(' ')[1];
+            if (string.IsNullOrEmpty(whom)||string.IsNullOrWhiteSpace(whom))
+            {
+                return;
+            }
             var result = await message.From.AddFriend(whom);
             if (result is OkResult || result is Assist.AlreadyResult)
             {
@@ -46,7 +50,7 @@ namespace TGBotGame
                 var result = await message.From.RemovePointsAsync(val);
                 if (result is OkResult)
                 {
-                    Assist.AddPointsAsync(Assist.GetUser(whom), val);
+                    //Assist.AddPointsAsync(Assist.GetUser(whom), val);
                 }
                 if (result is OkResult || result is Assist.AlreadyResult)
                 {
@@ -57,6 +61,7 @@ namespace TGBotGame
 
         public static async Task CreateRequestNextGame(ITelegramBotClient botClient, Message message)
         {
+            
         }
     }
 }
