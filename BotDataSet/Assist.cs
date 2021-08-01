@@ -83,7 +83,7 @@ namespace BotDataSet
                 }
             }
         }
-        public static BotUser GetUser(string UserName)
+        private static BotUser GetUser(string UserName)
         {
             using (BotDBContext cont = new BotDBContext())
             {
