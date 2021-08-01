@@ -45,7 +45,7 @@ namespace TGBotGame
             {
                 await handler;
             }
-            catch (Exception exception)
+             catch (Exception exception)
             {
                 await HandleErrorAsync(botClient, exception, cancellationToken);
             }

@@ -12,9 +12,11 @@ namespace BotLogger
         public static void Combine(string message)
         {
             whomId = GetUserId(message);
-            var mes = message.Split('\n')[1].ToLower().Split('#')[1];
-            var i = 1;
-                switch(mes)
+            var spl1 = message.Split('\n')[0];
+            var tlw = spl1.ToLower();
+            var spl2 = tlw.Split('#');
+            var mes = spl2[1];
+            switch (mes)
                 {
                     case "ban":
                         Assist.Ban(long.Parse(whomId), GetReason(message) );
@@ -25,7 +27,7 @@ namespace BotLogger
                     case "заглушить":
                         Assist.Mute(long.Parse(whomId),GetReason(message));
                         break;
-                    case "предупреждать_редактировать":
+                    case "предупреждать_редактировать ✍🏻":
                         Assist.AddWarn(long.Parse(whomId), GetReason(message));
                         break;
                     case "warn_reset":
