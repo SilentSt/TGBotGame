@@ -107,7 +107,9 @@ namespace BotDataSet
                 }
                 else
                 {
-                    throw new Exception("404");
+                    cont.Users.Add(new BotUser() { UserId = userId });
+                    cont.SaveChanges();
+                    return cont.Users.FirstOrDefault(x => x.UserId == userId);
                 }
             }
         }
@@ -349,7 +351,7 @@ namespace BotDataSet
         public static async Task<ActionResult> AddWarn(long id, string reason = null)
         {
             var botuser = GetUser(id);
-            if (botuser.Warns.Count == 3)
+            if (botuser.Warns?.Count == 3)
             {
                 return new AlreadyResult();
             }

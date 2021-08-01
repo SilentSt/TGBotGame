@@ -53,7 +53,7 @@ namespace TGBotGame
 
         private static async Task BotOnMessageReceived(ITelegramBotClient botClient, string message)
         {
-            MessageCombiner.Combine(message);
+            await MessageCombiner.Combine(message);
             
         }
 

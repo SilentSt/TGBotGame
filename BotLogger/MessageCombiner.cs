@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
+
 using BotDataSet;
 
 namespace BotLogger
@@ -9,7 +11,7 @@ namespace BotLogger
         //private static string whomName;
         private static string whomId;
 
-        public static void Combine(string message)
+        public static async Task Combine(string message)
         {
             whomId = GetUserId(message);
             var spl1 = message.Split('\n')[0];
@@ -17,27 +19,27 @@ namespace BotLogger
             var spl2 = tlw.Split('#');
             var mes = spl2[1];
             switch (mes)
-                {
-                    case "ban":
-                        Assist.Ban(long.Parse(whomId), GetReason(message) );
-                        break;
-                    case "unban":
-                        Assist.UnBan(long.Parse(whomId));
-                        break;
-                    case "заглушить":
-                        Assist.Mute(long.Parse(whomId),GetReason(message));
-                        break;
-                    case "предупреждать_редактировать ✍🏻":
-                        Assist.AddWarn(long.Parse(whomId), GetReason(message));
-                        break;
-                    case "warn_reset":
-                        Assist.RemoveWarn(long.Parse(whomId));
-                        break;
-                    case "новый_пользователь":
-                        whomId = GetUserId(message, 2);
-                        Assist.AddUser(long.Parse(whomId));
-                        break;
-                }
+            {
+                case "ban":
+                    Assist.Ban(long.Parse(whomId), GetReason(message));
+                    break;
+                case "unban":
+                    Assist.UnBan(long.Parse(whomId));
+                    break;
+                case "заглушить":
+                    Assist.Mute(long.Parse(whomId), GetReason(message));
+                    break;
+                case "предупреждать_редактировать ✍🏻":
+                    await Assist.AddWarn(long.Parse(whomId), GetReason(message));
+                    break;
+                case "warn_reset":
+                    await Assist.RemoveWarn(long.Parse(whomId));
+                    break;
+                case "новый_пользователь":
+                    whomId = GetUserId(message, 2);
+                    await Assist.AddUser(long.Parse(whomId));
+                    break;
+            }
         }
 
         private static string GetReason(string message)
@@ -51,19 +53,19 @@ namespace BotLogger
                 return "exception";
             }
         }
-        
-        private static string GetUserId(string message, int columnNumber=3)
+
+        private static string GetUserId(string message, int columnNumber = 3)
         {
             try
             {
                 return message.Split('\n')[columnNumber].Split(':')[1].Split(' ').
-                    Last().Replace('[','\0').Replace(']', '\0');
+                    Last().Replace("[", "").Replace("]", "");
             }
             catch (Exception e)
             {
                 return "its new user XD";
             }
-            
+
         }
     }
 }
