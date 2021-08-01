@@ -11,12 +11,10 @@ namespace BotLogger
 
         public static void Combine(string message)
         {
-            if (!message.Contains("log"))
-            {
-                return;
-            }
             whomId = GetUserId(message);
-                switch(message.Split(' ')[1].Split('\n')[1].ToLower().Split('#')[1])
+            var mes = message.Split('\n')[1].ToLower().Split('#')[1];
+            var i = 1;
+                switch(mes)
                 {
                     case "ban":
                         Assist.Ban(long.Parse(whomId), GetReason(message) );

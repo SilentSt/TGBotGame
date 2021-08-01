@@ -36,7 +36,8 @@ namespace TGBotGame
         {
             var handler = update.Type switch
             {
-                UpdateType.Message => BotOnMessageReceived(botClient, update.Message),
+                UpdateType.Message => BotOnMessageReceived(botClient, update.Message.Text),
+                UpdateType.ChannelPost => BotOnMessageReceived(botClient, update.ChannelPost.Text),
                 _ => UnknownUpdateHandlerAsync(botClient, update)
             };
 
@@ -50,11 +51,9 @@ namespace TGBotGame
             }
         }
 
-        private static async Task BotOnMessageReceived(ITelegramBotClient botClient, Message message)
+        private static async Task BotOnMessageReceived(ITelegramBotClient botClient, string message)
         {
-            if (message.Type != MessageType.Text)
-                return;
-            MessageCombiner.Combine(message.Text);
+            MessageCombiner.Combine(message);
             
         }
 
