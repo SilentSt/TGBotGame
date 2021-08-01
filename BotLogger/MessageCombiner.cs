@@ -36,7 +36,7 @@ namespace BotLogger
                     await Assist.RemoveWarn(long.Parse(whomId));
                     break;
                 case "новый_пользователь":
-                    whomId = GetUserId(message, 2);
+                    whomId = GetUserId(message, 1);
                     await Assist.AddUser(long.Parse(whomId));
                     break;
             }
@@ -46,15 +46,15 @@ namespace BotLogger
         {
             try
             {
-                return message.Split('\n')[5].Split(':')[2];
+                return message.Split('\n')[4].Split(':')[2];
             }
             catch (Exception e)
             {
-                return "exception";
+                return null;
             }
         }
 
-        private static string GetUserId(string message, int columnNumber = 3)
+        private static string GetUserId(string message, int columnNumber = 2)
         {
             try
             {
