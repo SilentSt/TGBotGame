@@ -8,43 +8,36 @@ namespace BotLogger
     {
         //private static string whomName;
         private static string whomId;
-        public static void DatabaseWriter(string message)
-        {
-            
-        }
 
-        private static void Combine(string message)
+        public static void Combine(string message)
         {
             if (!message.Contains("log"))
             {
                 return;
             }
-            else
-            {
-                whomId = GetUserId(message);
+            whomId = GetUserId(message);
                 switch(message.Split(' ')[1].Split('\n')[1].ToLower().Split('#')[1])
                 {
                     case "ban":
                         Assist.Ban(long.Parse(whomId), GetReason(message) );
                         break;
-                    /*case "unban":
+                    case "unban":
                         Assist.UnBan(long.Parse(whomId));
-                        break;*/
+                        break;
                     case "заглушить":
                         Assist.Mute(long.Parse(whomId),GetReason(message));
                         break;
                     case "предупреждать_редактировать":
                         Assist.AddWarn(long.Parse(whomId), GetReason(message));
                         break;
-                    /*case "warn_reset":
+                    case "warn_reset":
                         Assist.RemoveWarn(long.Parse(whomId));
-                        break;*/
+                        break;
                     case "новый_пользователь":
                         whomId = GetUserId(message, 2);
-                        //Assist.
+                        Assist.AddUser(long.Parse(whomId));
                         break;
                 }
-            }
         }
 
         private static string GetReason(string message)

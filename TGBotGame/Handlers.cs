@@ -76,6 +76,7 @@ namespace TGBotGame
                     "/friendsplay" => GroupFunctions.VokeFriendsPlay(botClient, message),
                     "/delfriends" => GroupFunctions.DeleteFriend(botClient, message),
                     "/help" => SendHelpMessage(botClient, message),
+                    "/startgame" => GroupFunctions.SendInvitesToUsers(botClient, message),
                     _ => Usage(botClient, message, Constants.GROUP_USAGE, new ReplyKeyboardMarkup())
                 };
             }

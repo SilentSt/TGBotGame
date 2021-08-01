@@ -3,6 +3,7 @@ using BotDataSet;
 using Microsoft.AspNetCore.Mvc;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
 
 namespace TGBotGame
 {
@@ -12,9 +13,17 @@ namespace TGBotGame
         {
             var whom = message.Text.Split(' ')[1];
             var result = await message.From.RemoveFriendAsync(whom);
-            if (result is OkResult || result is Assist.AlreadyResult)
+            if (result is OkResult)
             {
                 MessageSender.SendMessage(botClient, Constants.FRIEND_REMOVED_TEXT, message.From);
+            }
+            else if (result is Assist.AlreadyResult)
+            {
+                MessageSender.SendMessage(botClient, Constants.FRIEND_REMOVED_ALREADY, message.From);
+            }
+            else
+            {
+                MessageSender.SendMessage(botClient, Constants.FRIEND_REMOVED_EXCEPTION, message.From);
             }
         }
 
@@ -50,7 +59,7 @@ namespace TGBotGame
                 var result = await message.From.RemovePointsAsync(val);
                 if (result is OkResult)
                 {
-                    //Assist.AddPointsAsync(Assist.GetUser(whom), val);
+                    
                 }
                 if (result is OkResult || result is Assist.AlreadyResult)
                 {
@@ -61,7 +70,27 @@ namespace TGBotGame
 
         public static async Task CreateRequestNextGame(ITelegramBotClient botClient, Message message)
         {
-            
+            var result = await Assist.AddNextGame(message.From);
+            if (result is OkResult)
+            {
+                MessageSender.SendMessage(botClient, Constants.VOKE_NEXT_GAME_TEXT, message.From);
+            }
+        }
+
+        public static async Task SendInvitesToUsers(ITelegramBotClient botClient, Message message)
+        {
+            var us = await botClient.GetChatMemberAsync(message.Chat.Id, message.From.Id);
+            if (us.Status != ChatMemberStatus.Administrator|| us.Status != ChatMemberStatus.Creator)
+            {
+                return;
+            }
+            var users = Assist.GetNextGameUsers();
+            foreach (var user in users)
+            {
+                MessageSender.SendMessage(botClient, Constants.VOKE_PLAYER_PLAY, user);
+            }
+
+            await users.RemoveNextGame();
         }
     }
 }
