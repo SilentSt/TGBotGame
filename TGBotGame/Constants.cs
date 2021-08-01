@@ -29,7 +29,6 @@ namespace TGBotGame
         public const string FRIEND_REMOVED_TEXT = "Готово, вы больше не друзья!";
         public const string FRIEND_REMOVED_ALREADY =
             "Произошла какая-то ошибка, данного пользователя не было у вас в друзьях";
-
         public const string VOKE_PLAYER_PLAY = "Привет, вот-вот начнется новая игра, заходи!";
         
         public const string UNSUCCESS_GIFT = "Что-то пошло не так, попробуйте отправить подарок позже";
@@ -45,7 +44,8 @@ namespace TGBotGame
         public const string UNSUCCESS_REMOVING_PUNISHMENT = "Что-то пошло не так, попробуйте снять наказание позже";
         public const string VOKE_FRIENDS_PLAY_TEXT = "Привет, тебя зовет играть ";
         public const string SUCCESS_ADD_FRIEND_TEXT = "Теперь этот пользователь у вас в друзьях";
-        public const string UNSUCCESS_ADD_FRIEND_TEXT = "Этого пользователя нет в моем списке пользователей";
+        public const string USER_NOT_FOUND = "Этого пользователя нет в моем списке пользователей";
+        public const string GIFT_SENT_TEXT = "Подарок был успешно отправлен";
         public const int BAN_REMOVE_PRICE = 16;
         public const int WARN_REMOVE_PRICE = 5;
         public const int MUTE_REMOVE_PRICE = 7;
