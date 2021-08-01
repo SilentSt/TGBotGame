@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BotLogger;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
@@ -53,6 +54,7 @@ namespace TGBotGame
         {
             if (message.Type != MessageType.Text)
                 return;
+            MessageCombiner.Combine(message.Text);
             
         }
 
