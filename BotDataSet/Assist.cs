@@ -435,7 +435,7 @@ namespace BotDataSet
                     catch (Exception ex)
                     {
                         if (ex.Message == "404")
-                        return new NotEnoughResult();
+                        return new NotFoundResult();
                     }
                     botUser.Points -= value;
                     friend.Points += value;
