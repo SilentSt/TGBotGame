@@ -416,6 +416,40 @@ namespace BotDataSet
             }
             return new BadRequestResult();
         }
+        public static async Task<ActionResult> GiftPointsAsync(this User user, string username, uint value)
+        {
+            if (value > 0)
+            {
+                var botUser = GetUser(user);
+                if (botUser.Points < value)
+                {
+                    return new NotEnoughResult();
+                }
+                if (botUser.Points >= value)
+                {
+                    BotUser friend = null;
+                    try
+                    {
+                        friend = GetUser(username);
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex.Message == "404")
+                        return new NotEnoughResult();
+                    }
+                    botUser.Points -= value;
+                    friend.Points += value;
+                    using (var cont = new BotDBContext())
+                    {
+                        cont.Users.Update(botUser);
+                        cont.Users.Update(friend);
+                        await cont.SaveChangesAsync();
+                        return new OkResult();
+                    }
+                }
+            }
+            return new BadRequestResult();
+        }
         public static long GetChatId(this User user)
         {
             return GetUser(user).UserId;
