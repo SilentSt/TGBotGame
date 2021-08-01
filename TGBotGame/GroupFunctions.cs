@@ -56,15 +56,20 @@ namespace TGBotGame
             uint val;
             if (uint.TryParse(count, out val))
             {
-                var result = await message.From.RemovePointsAsync(val);
+                var result = await message.From.GiftPointsAsync(whom, val);
                 if (result is OkResult)
                 {
-                    
+                    MessageSender.SendMessage(botClient, Constants.GIFT_SENT_TEXT, message.From);
                 }
-                if (result is OkResult || result is Assist.AlreadyResult)
+                else if (result is Assist.NotEnoughResult)
                 {
-                    MessageSender.SendMessage(botClient, Constants.SUCCESS_ADD_FRIEND_TEXT, message.From);
+                    MessageSender.SendMessage(botClient, Constants.NOT_ENOUGH_CREDITS_TEXT, message.From);
                 }
+                else if(result is NotFoundResult)
+                {
+                    MessageSender.SendMessage(botClient, Constants.USER_NOT_FOUND, message.From);
+                }
+                
             }
         }
 
