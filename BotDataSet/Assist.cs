@@ -504,6 +504,36 @@ namespace BotDataSet
                 }
             }
         }
+        public static async Task<ActionResult> RemoveFriendAsync(this User user, string username)
+        {
+            try
+            {
+                var friend = GetUser(username);
+                var BotUser = GetUser(user);
+                using (var cont = new BotDBContext())
+                {
+                    if (cont.Friends.All(x => x.UserId != BotUser.UserId && x.FriendId != friend.UserId))
+                    {
+                        return new AlreadyResult();
+                    }
+                    var fr = cont.Friends.First(x => x.UserId == BotUser.UserId && x.FriendId == friend.UserId);
+                    cont.Friends.Remove(fr);
+                    await cont.SaveChangesAsync();
+                    return new OkResult();
+                }
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message == "404")
+                {
+                    return new NotFoundResult();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
         public static async Task<Payment> AddPayment(string phone, uint sum)
         {
             if (sum % 50 != 0) throw new Exception("Invalid sum");

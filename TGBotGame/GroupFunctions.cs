@@ -11,7 +11,7 @@ namespace TGBotGame
         public static async Task DeleteFriend(ITelegramBotClient botClient, Message message)
         {
             var whom = message.Text.Split(' ')[1];
-            var result = await message.From.RemoveFriendAsync(Assist.GetUser(whom).UserId);
+            var result = await message.From.RemoveFriendAsync(whom);
             if (result is OkResult || result is Assist.AlreadyResult)
             {
                 MessageSender.SendMessage(botClient, Constants.FRIEND_REMOVED_TEXT, message.From);
