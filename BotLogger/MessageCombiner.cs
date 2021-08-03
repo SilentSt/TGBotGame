@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using BotDataSet;
+using Telegram.Bot.Types;
 
 namespace BotLogger
 {
@@ -11,50 +12,72 @@ namespace BotLogger
         //private static string whomName;
         private static string whomId;
 
-        public static async Task Combine(string message)
+        public static async Task Combine(Message message)
         {
-            whomId = GetUserId(message);
-            var spl1 = message.Split('\n')[0];
+            whomId = GetUserId(message.Text);
+            var spl1 = message.Text.Split('\n')[0];
             var tlw = spl1.ToLower();
             var spl2 = tlw.Split('#');
-            var mes = spl2[1];
+            var spl3 = spl2[1].Split(' ');
+            var mes = spl3[0];
             switch (mes)
             {
                 case "ban":
-                    Assist.Ban(long.Parse(whomId), GetReason(message));
+                    Assist.Ban(long.Parse(whomId), GetReason(message.Text));
                     break;
                 case "unban":
                     Assist.UnBan(long.Parse(whomId));
                     break;
                 case "заглушить":
-                    Assist.Mute(long.Parse(whomId), GetReason(message));
+                    Assist.Mute(long.Parse(whomId), GetReason(message.Text));
                     break;
-                case "предупреждать_редактировать ✍🏻":
-                    await Assist.AddWarn(long.Parse(whomId), GetReason(message));
+                case "предупреждать_редактировать":
+                    if (int.Parse(GetWarnCount(message.Text))>message.From.GetUserWarnCount())
+                    {
+                        await Assist.AddWarn(long.Parse(whomId), GetReason(message.Text));    
+                    }
+                    else if (int.Parse(GetWarnCount(message.Text))<Assist.GetUser(whomId))
+                    {
+                        await Assist.RemoveWarn(long.Parse(whomId));
+                    }
+                    break;
+                case "warn":
+                    await Assist.AddWarn(long.Parse(whomId), GetReason(message.Text));
+                    break;
+                case "звук_включён":
+                    Assist.UnMute(long.Parse(whomId));
                     break;
                 case "warn_reset":
                     await Assist.RemoveWarn(long.Parse(whomId));
                     break;
                 case "новый_пользователь":
-                    whomId = GetUserId(message, 2);
+                    whomId = GetUserId(message.Text, 1);
                     await Assist.AddUser(long.Parse(whomId));
                     break;
             }
+        }
+
+        private static string GetWarnCount(string message)
+        {
+            var sp1 = message.Split('\n')[4];
+            var sp2 = sp1.Split(':')[1];
+            var sp3 = sp2.Replace(" ", "").Split('/')[0];
+            return sp3;
         }
 
         private static string GetReason(string message)
         {
             try
             {
-                return message.Split('\n')[5].Split(':')[2];
+                return message.Split('\n')[4].Split(':')[2];
             }
             catch (Exception e)
             {
-                return "exception";
+                return null;
             }
         }
 
-        private static string GetUserId(string message, int columnNumber = 3)
+        private static string GetUserId(string message, int columnNumber = 2)
         {
             try
             {
