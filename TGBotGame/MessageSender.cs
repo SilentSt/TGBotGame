@@ -43,5 +43,14 @@ namespace TGBotGame
                 message
             );
         }
+
+        public static void SendMessage(ITelegramBotClient botClient, InlineKeyboardMarkup prepareUnpunishmentAdminsKeyboard, string adminsRequestRemovePunishment, long adminsGroupId)
+        {
+            botClient.SendTextMessageAsync(
+                adminsGroupId,
+                adminsRequestRemovePunishment,
+                replyMarkup: prepareUnpunishmentAdminsKeyboard
+            );
+        }
     }
 }
