@@ -12,7 +12,8 @@ namespace TGBotGame
             Reason,
             Punishment,
             FillBalance,
-            Friends
+            Friends,
+            InputPhone
         }
         public void PushToReasonPunishment(ITelegramBotClient botClient, Telegram.Bot.Types.User user)
         {
@@ -50,6 +51,12 @@ namespace TGBotGame
         {
             MessageSender.SendMessage(botClient, Keyboards.PrepareMenuKeyboard(), Constants.MENU_TEXT, user);
             Handlers.users[user.Id].curState = CurentState.Menu;
+        }
+
+        public void PushToInputPhone(ITelegramBotClient botClient, Telegram.Bot.Types.User user)
+        {
+            MessageSender.SendMessage(botClient, Constants.REQUEST_PHONE, user);
+            Handlers.users[user.Id].curState = CurentState.InputPhone;
         }
         
     }

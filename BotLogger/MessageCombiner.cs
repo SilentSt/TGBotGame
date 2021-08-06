@@ -32,11 +32,11 @@ namespace BotLogger
                     Assist.Mute(long.Parse(whomId), GetReason(message.Text));
                     break;
                 case "предупреждать_редактировать":
-                    if (int.Parse(GetWarnCount(message.Text))>message.From.GetUserWarnCount())
+                    if (int.Parse(GetWarnCount(message.Text))>Assist.GetUserWarnCount(long.Parse(whomId)))
                     {
                         await Assist.AddWarn(long.Parse(whomId), GetReason(message.Text));    
                     }
-                    else if (int.Parse(GetWarnCount(message.Text))<Assist.GetUser(whomId))
+                    else if (int.Parse(GetWarnCount(message.Text))<Assist.GetUserWarnCount(long.Parse(whomId)))
                     {
                         await Assist.RemoveWarn(long.Parse(whomId));
                     }

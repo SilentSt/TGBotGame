@@ -64,11 +64,21 @@ namespace TGBotGame
 
         private static async Task BotOnMessageReceived(ITelegramBotClient botClient, Message message)
         {
+            if (message.Type == MessageType.ChatMembersAdded)
+            {
+                foreach (var member in message.NewChatMembers)
+                {
+                    await member.AddUser();
+                }
+
+                return;
+            }
+            
             if (message.Type != MessageType.Text)
                 return;
             if (message.From.Id != message.Chat.Id)
             {
-                var action = (message.Text.Split(' ').First()) switch
+                var action = (message.Text.Split(' ').First().Split('@').First()) switch
                 {
                     "/next" => GroupFunctions.CreateRequestNextGame(botClient, message),
                     "/gift" => GroupFunctions.SendGiftToFriend(botClient, message),
@@ -165,6 +175,10 @@ namespace TGBotGame
         // Process Inline Keyboard callback data
         private static async Task BotOnCallbackQueryReceived(ITelegramBotClient botClient, CallbackQuery callbackQuery)
         {
+            if (callbackQuery.Data == "remove_message")
+            {
+                await botClient.DeleteMessageAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId);
+            }
             if (users.ContainsKey(callbackQuery.Message.Chat.Id)&&
                 users[callbackQuery.Message.Chat.Id].curState == KeyboardsNavigator.CurentState.Friends
                 )

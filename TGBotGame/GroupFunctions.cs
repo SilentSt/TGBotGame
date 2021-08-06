@@ -85,10 +85,10 @@ namespace TGBotGame
         public static async Task SendInvitesToUsers(ITelegramBotClient botClient, Message message)
         {
             var us = await botClient.GetChatMemberAsync(message.Chat.Id, message.From.Id);
-            if (us.Status != ChatMemberStatus.Administrator|| us.Status != ChatMemberStatus.Creator)
+            if (us.Status == ChatMemberStatus.Administrator||us.Status == ChatMemberStatus.Creator)
             {
-                return;
-            }
+                
+            
             var users = Assist.GetNextGameUsers();
             foreach (var user in users)
             {
@@ -96,6 +96,7 @@ namespace TGBotGame
             }
 
             await users.RemoveNextGame();
+            }
         }
     }
 }

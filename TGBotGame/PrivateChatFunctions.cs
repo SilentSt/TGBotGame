@@ -70,7 +70,7 @@ namespace TGBotGame
                     }
                     break;
                 case Amount.Twenty:
-                    //donate request
+                    //Assist.AddPayment()
                     if (true)
                     {
                         result = await user.AddPointsAsync(20);
@@ -99,10 +99,17 @@ namespace TGBotGame
             switch (punishments)
             {
                 case Punishments.Ban:
+                    if (!user.GetUser().IsBanned)
+                    {
+                        MessageSender.SendMessage(botClient, Constants.NO_BANS_TEXT, user);
+                        return;
+                    }
                     result = await user.RemovePointsAsync(Constants.BAN_REMOVE_PRICE);
                     if (result is OkResult)
                     {
-                        //unban
+                        user.UnBan();
+                        MessageSender.SendMessage(botClient,Keyboards.PrepareUnpunishmentAdminsKeyboard(user) ,Constants.ADMINS_REQUEST_REMOVE_PUNISHMENT+"бана.\n"+Constants.USERNAME+user.Username+'\n'+
+                            Constants.USERID+user.Id, Configuration.AdminsGroupId);
                         MessageSender.SendMessage(botClient, Constants.SUCCESS_REMOVED_PUNISHMENT_TEXT, user);
                     }
                     else if (result is BadRequestResult)
@@ -116,10 +123,17 @@ namespace TGBotGame
 
                     break;
                 case Punishments.Mute:
+                    if (!user.GetUser().IsMuted)
+                    {
+                        MessageSender.SendMessage(botClient, Constants.NO_MUTES_TEXT, user);
+                        return;
+                    }
                     result = await user.RemovePointsAsync(Constants.MUTE_REMOVE_PRICE);
                     if (result is OkResult)
                     {
-                        //unban
+                        user.UnMute();
+                        MessageSender.SendMessage(botClient,Keyboards.PrepareUnpunishmentAdminsKeyboard(user) , Constants.ADMINS_REQUEST_REMOVE_PUNISHMENT+"мута.\n"+Constants.USERNAME+user.Username+'\n'+
+                                                             Constants.USERID+user.Id, Configuration.AdminsGroupId);
                         MessageSender.SendMessage(botClient, Constants.SUCCESS_REMOVED_PUNISHMENT_TEXT, user);
                     }
                     else if (result is BadRequestResult)
@@ -133,10 +147,17 @@ namespace TGBotGame
 
                     break;
                 case Punishments.Warn:
+                    if (user.GetUserWarnCount()==0)
+                    {
+                        MessageSender.SendMessage(botClient, Constants.NO_WARNS_TEXT, user);
+                        return;
+                    }
                     result = await user.RemovePointsAsync(Constants.WARN_REMOVE_PRICE);
                     if (result is OkResult)
                     {
-                        //unban
+                        await Assist.RemoveWarn(user.Id);
+                        MessageSender.SendMessage(botClient,Keyboards.PrepareUnpunishmentAdminsKeyboard(user) , Constants.ADMINS_REQUEST_REMOVE_PUNISHMENT+"варна.\n"+Constants.USERNAME+user.Username+'\n'+
+                                                             Constants.USERID+user.Id, Configuration.AdminsGroupId);
                         MessageSender.SendMessage(botClient, Constants.SUCCESS_REMOVED_PUNISHMENT_TEXT, user);
                     }
                     else if (result is BadRequestResult)
@@ -190,8 +211,7 @@ namespace TGBotGame
 
         public static async Task VokeToNextGame(ITelegramBotClient botClient, Telegram.Bot.Types.User user)
         {
-            //write to DB to woke user for game
-            // Я НЕ НАШЕЛ МЕТОДА ДЛЯ ЭТОГО
+            await user.AddNextGame();
             MessageSender.SendMessage(botClient, Constants.VOKE_NEXT_GAME_TEXT, user);
             Handlers.users[user.Id].keyboardNavigator.PopToMenu(botClient, user);
         }
@@ -202,10 +222,9 @@ namespace TGBotGame
             {
                 case Punishments.Ban:
                     var ban = user.IsUserBanned();
-                    //ДОБАВЬ ПОЛЯ ВРЕМЯ БАНА, К МУТУ И ВАРНУ ОТНОСИТСЯ ТОЖЕ САМОЕ, У НИХ ТАКОЕ ЕСТЬ((((
                     if (ban)
                     {
-                        string reason = "У тебя бан за "+user.GetUser().BanReason+"до %время%";
+                        string reason = "У тебя бан за "+user.GetUser().BanReason+" до "+user.GetUnBanDate();
                         MessageSender.SendMessage(botClient, reason, user);
                         Handlers.users[user.Id].keyboardNavigator.PopToMenu(botClient, user);
                     }
@@ -220,7 +239,7 @@ namespace TGBotGame
                     var mute = user.IsUserMuted();
                     if (mute)
                     {
-                        string reason = "У тебя мут за "+user.GetUser().MuteReason+"до %время%";
+                        string reason = "У тебя мут за "+user.GetUser().MuteReason+" до "+user.GetUnMuteDate();
                         MessageSender.SendMessage(botClient, reason, user);
                         Handlers.users[user.Id].keyboardNavigator.PopToMenu(botClient, user);
                     }

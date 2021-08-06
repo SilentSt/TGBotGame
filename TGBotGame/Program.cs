@@ -14,7 +14,7 @@ namespace TGBotGame
 
         public static async Task Main()
         {
-            Bot = new TelegramBotClient(Configuration.BotToken);
+            Bot = new TelegramBotClient("1435986427:AAFJXkzS1HuxjE1H-4qULAtKDt2KXFGhYjw");
 
             var me = await Bot.GetMeAsync();
             Console.Title = me.Username;
@@ -24,7 +24,7 @@ namespace TGBotGame
             // StartReceiving does not block the caller thread. Receiving is done on the ThreadPool.
             Bot.StartReceiving(new DefaultUpdateHandler(Handlers.HandleUpdateAsync, Handlers.HandleErrorAsync),
                 cts.Token);
-
+            //await Bot.SendTextMessageAsync(Configuration.GroupId, "/info RUBLbBudet");
             Console.WriteLine($"Start listening for @{me.Username}");
             Console.ReadLine();
 

@@ -147,5 +147,13 @@ namespace TGBotGame
             return new InlineKeyboardMarkup(users);
 
         }
+
+        public static InlineKeyboardMarkup PrepareUnpunishmentAdminsKeyboard(Telegram.Bot.Types.User user)
+        {
+            var btn = new InlineKeyboardButton();
+            btn.Text = "Готово!(сообщение удалится)";
+            btn.CallbackData = "remove_message";
+            return new InlineKeyboardMarkup(btn);
+        }
     }
 }

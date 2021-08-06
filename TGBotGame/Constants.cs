@@ -30,11 +30,13 @@ namespace TGBotGame
         public const string FRIEND_REMOVED_ALREADY =
             "Произошла какая-то ошибка, данного пользователя не было у вас в друзьях";
         public const string VOKE_PLAYER_PLAY = "Привет, вот-вот начнется новая игра, заходи!";
-        
+        public const string ADMINS_REQUEST_REMOVE_PUNISHMENT = "Пользователь запросил снятие ";
+        public const string USERNAME = "Имя пользователя: ";
+        public const string USERID = "ID пользователя: ";
         public const string UNSUCCESS_GIFT = "Что-то пошло не так, попробуйте отправить подарок позже";
         public const string FRIEND_REMOVED_EXCEPTION =
             "Что-то пошло не так, попробуйте удалить этого пользователя из друзей позже";
-        public const string SUCCESS_REMOVED_PUNISHMENT_TEXT = "Готово! :)";
+        public const string SUCCESS_REMOVED_PUNISHMENT_TEXT = "Готово! Запрос администратору отправлен :)";
         public const string NOT_ENOUGH_CREDITS_TEXT = "Недостаточно кредитов!";
 
         public const string SUCCESS_FILLING_BALANCE_TEXT =
@@ -46,6 +48,10 @@ namespace TGBotGame
         public const string SUCCESS_ADD_FRIEND_TEXT = "Теперь этот пользователь у вас в друзьях";
         public const string USER_NOT_FOUND = "Этого пользователя нет в моем списке пользователей";
         public const string GIFT_SENT_TEXT = "Подарок был успешно отправлен";
+        public const string REQUEST_PHONE = "Введите ваш номер телефона, с которого вы будете оплачивать, это необходимо, чтобы распознать ваш платеж среди остальных.";
+        public const string REQUEST_GROUP_HELP_UNMUTE = "/unmute";
+        public const string REQUEST_GROUP_HELP_UNBAN = "/unban";
+        public const string REQUEST_GROUP_HELP_UNWARN = "/unwarn";
         public const int BAN_REMOVE_PRICE = 16;
         public const int WARN_REMOVE_PRICE = 5;
         public const int MUTE_REMOVE_PRICE = 7;
