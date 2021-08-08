@@ -139,13 +139,13 @@ namespace TGBotGame
                         users[message.Chat.Id].keyboardNavigator.PushToFillBalance(botClient, message.From);
                         break;
                     case"5 кредитов":
-                        await PrivateChatFunctions.FillBalance(5, botClient, message.From);
+                        await PrivateChatFunctions.FillBalance(50, botClient, message.From);
                         break;
                     case"10 кредитов":
-                        await PrivateChatFunctions.FillBalance(10, botClient, message.From);
+                        await PrivateChatFunctions.FillBalance(100, botClient, message.From);
                         break;
                     case"20 кредитов":
-                        await PrivateChatFunctions.FillBalance(20, botClient, message.From);
+                        await PrivateChatFunctions.FillBalance(200, botClient, message.From);
                         break;
                     case "Снять варн":
                         await PrivateChatFunctions.RemovePunishment(PrivateChatFunctions.Punishments.Warn, botClient, message.From);
