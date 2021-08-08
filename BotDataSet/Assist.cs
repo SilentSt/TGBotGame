@@ -13,7 +13,7 @@ namespace BotDataSet
 {
     public static class Assist
     {
-        public static Regex PhoneValidation = new Regex(@"^(\+7|7|8)?[\s\-]?\(?[489][0-9]{2}\)?[\s\-]?[0-9]{3}[\s\-]?[0-9]{2}[\s\-]?[0-9]{2}$");
+        public static Regex PhoneValidation = new Regex(@"^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$");
         public class NotFoundResult : ActionResult
         {
             public string Content { get; } = "Not found";
@@ -576,10 +576,10 @@ namespace BotDataSet
                 }
             }
         }
-        public static async Task<Payment> AddPayment(string phone, uint sum)
+        public static async Task<Payment> AddPayment(uint sum)
         {
-            if (sum % 50 != 0) throw new Exception("Invalid sum");
-            if (!PhoneValidation.IsMatch(phone)) throw new Exception("Invalid number");
+            //if (sum % 50 != 0) throw new Exception("Invalid sum");
+            //if (!PhoneValidation.IsMatch(phone)) throw new Exception("Invalid number");
             var rId = (new Random()).Next(1000000, 9999999);
             using (var cont = new BotDBContext())
             {
@@ -589,7 +589,7 @@ namespace BotDataSet
                 }
                 if (cont.Payments.All(x => x.RId != rId))
                 {
-                    var paym = new Payment() { RId = (uint)rId };
+                    var paym = new Payment() { RId = (uint)rId, Sum = sum};
                     await cont.Payments.AddAsync(paym);
                     await cont.SaveChangesAsync();
                     return paym;

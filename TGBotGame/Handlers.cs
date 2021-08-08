@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using BotDataSet;
@@ -94,7 +95,7 @@ namespace TGBotGame
             {
                 if (!users.ContainsKey(message.Chat.Id))
                 {
-                    users.Add(message.Chat.Id, new User(message.Chat.Id));
+                    users.Add(message.Chat.Id, new User(message.Chat.Id, message.From));
                 }
                 switch (message.Text)
                 {
@@ -138,13 +139,13 @@ namespace TGBotGame
                         users[message.Chat.Id].keyboardNavigator.PushToFillBalance(botClient, message.From);
                         break;
                     case"5 кредитов":
-                        await PrivateChatFunctions.FillBalance(PrivateChatFunctions.Amount.Five, botClient, message.From);
+                        await PrivateChatFunctions.FillBalance(5, botClient, message.From);
                         break;
                     case"10 кредитов":
-                        await PrivateChatFunctions.FillBalance(PrivateChatFunctions.Amount.Ten, botClient, message.From);
+                        await PrivateChatFunctions.FillBalance(10, botClient, message.From);
                         break;
                     case"20 кредитов":
-                        await PrivateChatFunctions.FillBalance(PrivateChatFunctions.Amount.Twenty, botClient, message.From);
+                        await PrivateChatFunctions.FillBalance(20, botClient, message.From);
                         break;
                     case "Снять варн":
                         await PrivateChatFunctions.RemovePunishment(PrivateChatFunctions.Punishments.Warn, botClient, message.From);

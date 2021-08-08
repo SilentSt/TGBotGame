@@ -40,7 +40,7 @@ namespace TGBotGame
         public const string NOT_ENOUGH_CREDITS_TEXT = "Недостаточно кредитов!";
 
         public const string SUCCESS_FILLING_BALANCE_TEXT =
-            "После оплаты автоматическое зачисление на счёт в течение 15 минут";
+            "Оплата успешно зачислена!";
 
         public const string UNSUCCESS_FILING_BALANCE_TEXT = "Что-то пошло не так, попробуйте пополнить баланс позже";
         public const string UNSUCCESS_REMOVING_PUNISHMENT = "Что-то пошло не так, попробуйте снять наказание позже";
