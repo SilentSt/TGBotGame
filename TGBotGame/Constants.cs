@@ -42,6 +42,7 @@ namespace TGBotGame
         public const string SUCCESS_FILLING_BALANCE_TEXT =
             "Оплата успешно зачислена!";
 
+        public const string ERROR_IN_SUM = "Сумма либо слишком большая, либо неправильно указана";
         public const string UNSUCCESS_FILING_BALANCE_TEXT = "Что-то пошло не так, попробуйте пополнить баланс позже";
         public const string UNSUCCESS_REMOVING_PUNISHMENT = "Что-то пошло не так, попробуйте снять наказание позже";
         public const string VOKE_FRIENDS_PLAY_TEXT = "Привет, тебя зовет играть ";

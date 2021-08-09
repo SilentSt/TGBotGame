@@ -45,6 +45,7 @@ namespace TGBotGame
                 // UpdateType.ShippingQuery:
                 // UpdateType.PreCheckoutQuery:
                 // UpdateType.Poll:
+                UpdateType.ChannelPost => MessageCombiner.Combine(update.Message),
                 UpdateType.Message => BotOnMessageReceived(botClient, update.Message),
                 UpdateType.EditedMessage => BotOnMessageReceived(botClient, update.EditedMessage),
                 UpdateType.CallbackQuery => BotOnCallbackQueryReceived(botClient, update.CallbackQuery),
@@ -79,6 +80,7 @@ namespace TGBotGame
                 return;
             if (message.From.Id != message.Chat.Id)
             {
+                //NEED TO BE FIXED
                 var action = (message.Text.Split(' ').First().Split('@').First()) switch
                 {
                     "/next" => GroupFunctions.CreateRequestNextGame(botClient, message),

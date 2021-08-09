@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Threading.Tasks;
 using BotDataSet;
 using Microsoft.AspNetCore.Mvc;
@@ -38,14 +39,19 @@ namespace TGBotGame
         public static async Task AddFriend(ITelegramBotClient botClient, Message message)
         {
             var whom = message.Text.Split(' ')[1];
-            if (string.IsNullOrEmpty(whom)||string.IsNullOrWhiteSpace(whom))
+            if (string.IsNullOrEmpty(whom) || string.IsNullOrWhiteSpace(whom))
             {
                 return;
             }
+
             var result = await message.From.AddFriend(whom);
             if (result is OkResult || result is Assist.AlreadyResult)
             {
                 MessageSender.SendMessage(botClient, Constants.SUCCESS_ADD_FRIEND_TEXT, message.From);
+            }
+            else
+            {
+                MessageSender.SendMessage(botClient, Constants.USER_NOT_FOUND, message.From);
             }
         }
 
@@ -65,11 +71,14 @@ namespace TGBotGame
                 {
                     MessageSender.SendMessage(botClient, Constants.NOT_ENOUGH_CREDITS_TEXT, message.From);
                 }
-                else if(result is NotFoundResult)
+                else if (result is NotFoundResult)
                 {
                     MessageSender.SendMessage(botClient, Constants.USER_NOT_FOUND, message.From);
                 }
-                
+            }
+            else
+            {
+                MessageSender.SendMessage(botClient, Constants.ERROR_IN_SUM, message.From);
             }
         }
 
@@ -85,17 +94,15 @@ namespace TGBotGame
         public static async Task SendInvitesToUsers(ITelegramBotClient botClient, Message message)
         {
             var us = await botClient.GetChatMemberAsync(message.Chat.Id, message.From.Id);
-            if (us.Status == ChatMemberStatus.Administrator||us.Status == ChatMemberStatus.Creator)
+            if (us.Status == ChatMemberStatus.Administrator || us.Status == ChatMemberStatus.Creator)
             {
-                
-            
-            var users = Assist.GetNextGameUsers();
-            foreach (var user in users)
-            {
-                MessageSender.SendMessage(botClient, Constants.VOKE_PLAYER_PLAY, user);
-            }
+                var users = Assist.GetNextGameUsers();
+                foreach (var user in users)
+                {
+                    MessageSender.SendMessage(botClient, Constants.VOKE_PLAYER_PLAY, user);
+                }
 
-            await users.RemoveNextGame();
+                await users.RemoveNextGame();
             }
         }
     }
