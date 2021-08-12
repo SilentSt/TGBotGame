@@ -83,6 +83,46 @@ namespace BotDataSet
                 }
             }
         }
+        private static BotUser GetWarnUser(this User user)
+        {
+            using (BotDBContext cont = new BotDBContext())
+            {
+                if (cont.Users.Any(x => x.UserId == user.Id))
+                {
+                    var botuser = cont.Warns.FirstOrDefault(x => x.User.UserId == user.Id).User;
+                    if (botuser.UserName != user.Username)
+                    {
+                        botuser.UserName = user.Username;
+                        cont.Users.Update(botuser);
+                        cont.SaveChanges();
+                    }
+                    return botuser;
+                }
+                else
+                {
+                    var NewUser = cont.Users.Add(new BotUser() { UserId = user.Id, UserName = user.Username });
+                    cont.SaveChanges();
+                    return NewUser.Entity;
+                }
+            }
+        }
+        private static BotUser GetWarnUser(long id)
+        {
+            using (BotDBContext cont = new BotDBContext())
+            {
+                if (cont.Users.Any(x => x.UserId == id))
+                {
+                    var botuser = cont.Warns.FirstOrDefault(x => x.User.UserId == id).User;
+                    return botuser;
+                }
+                else
+                {
+                    var NewUser = cont.Users.Add(new BotUser() { UserId = id });
+                    cont.SaveChanges();
+                    return NewUser.Entity;
+                }
+            }
+        }
         private static BotUser GetUser(string UserName)
         {
             using (BotDBContext cont = new BotDBContext())
@@ -324,18 +364,39 @@ namespace BotDataSet
         }
         public static int GetUserWarnCount(this User user)
         {
-            var res = GetUser(user);
-            var res1 = res.Warns;
-            var res2 = res1?.Count ?? 0;
-            return res2;
+            using (BotDBContext cont = new BotDBContext())
+            {
+                if (cont.Warns.Any(x => x.UserId == user.Id))
+                {
+                    var Warn = cont.Warns.Where(x => x.UserId == user.Id);
+                    return Warn.Count();
+                }
+                return 0;
+            }
         }
         public static int GetUserWarnCount(long id)
         {
-            return GetUser(id).Warns?.Count??0;
+            using (BotDBContext cont = new BotDBContext())
+            {
+                if (cont.Warns.Any(x => x.UserId == id))
+                {
+                    var Warn = cont.Warns.Where(x => x.UserId == id);
+                    return Warn.Count();
+                }
+                return 0;
+            }
         }
         public static List<string> GetUserWarnsReasons(this User user)
         {
-            return GetUser(user).Warns.Select(x => x.Reason).ToList();
+            using (BotDBContext cont = new BotDBContext())
+            {
+                if (cont.Warns.Any(x => x.UserId == user.Id))
+                {
+                    var Warn = cont.Warns.Where(x => x.UserId == user.Id);
+                    return Warn.Select(x=>x.Reason).ToList();
+                }
+                return null;
+            }
         }
         public static async Task<ActionResult> AddWarn(this User user, string reason = null)
         {
@@ -375,14 +436,14 @@ namespace BotDataSet
         }
         public static async Task<ActionResult> RemoveWarn(long id)
         {
-            var botUser = GetUser(id);
-            if (botUser.Warns.Count < 1)
+            var botUser = GetUserWarnCount(id);
+            if (botUser < 1)
             {
                 return new AlreadyResult();
             }
             using (var cont = new BotDBContext())
             {
-                var warn = cont.Warns.OrderBy(x => x.Id).First();
+                var warn = cont.Warns.OrderBy(x => x.Id).First(t=>t.UserId==id);
                 cont.Warns.Remove(warn);
                 await cont.SaveChangesAsync();
                 return new OkResult();
