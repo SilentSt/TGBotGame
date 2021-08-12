@@ -324,7 +324,10 @@ namespace BotDataSet
         }
         public static int GetUserWarnCount(this User user)
         {
-            return GetUser(user).Warns?.Count??0;
+            var res = GetUser(user);
+            var res1 = res.Warns;
+            var res2 = res1?.Count ?? 0;
+            return res2;
         }
         public static int GetUserWarnCount(long id)
         {

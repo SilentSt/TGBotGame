@@ -45,7 +45,7 @@ namespace TGBotGame
                 // UpdateType.ShippingQuery:
                 // UpdateType.PreCheckoutQuery:
                 // UpdateType.Poll:
-                UpdateType.ChannelPost => MessageCombiner.Combine(update.Message),
+                UpdateType.ChannelPost => MessageCombiner.Combine(update.ChannelPost),
                 UpdateType.Message => BotOnMessageReceived(botClient, update.Message),
                 UpdateType.EditedMessage => BotOnMessageReceived(botClient, update.EditedMessage),
                 UpdateType.CallbackQuery => BotOnCallbackQueryReceived(botClient, update.CallbackQuery),

@@ -20,7 +20,8 @@ namespace BotDataSet
         public DateTime? UnMutedDate { get; set; }
         public string MuteReason { get; set; }
         public string BanReason { get; set; }
-        public virtual List<Warn> Warns{ get; set; }
+        //[ForeignKey("UserId")]
+        public virtual ICollection<Warn> Warns{ get; set; }
     }
     public class Warn
     {
@@ -29,7 +30,7 @@ namespace BotDataSet
         [Required]
         public string Reason { get; set; }
         public long UserId { get; set;}
-        [ForeignKey("UserId")]
+        //[ForeignKey("UserId")]
         public virtual BotUser User { get; set; }
 
     }
