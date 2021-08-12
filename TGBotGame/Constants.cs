@@ -20,7 +20,7 @@ namespace TGBotGame
         public const string VOKE_NEXT_GAME_TEXT = "Готово!:) мы оповестим тебя как начнётся следущая регистрация";
         public const string VOKE_NEXT_GAME_ALREADY_TEXT = "Ты уже запросил приглашение на следующую игру";
         public const string REASON_PUNISHMENT_TEXT = "Вы хотите узнать причину или снять наказание?";
-        public const string REASON_TEXT = "О причне какого типа наказания вы хотите унзать?";
+        public const string REASON_TEXT = "О причине какого типа наказания вы хотите узнать?";
         public const string PUNISHMENT_TEXT = "Мой баланс кредитов: ";
         public const string FILL_CREDITS_TEXT = "Какое колличество кредитов вы хотите пополнить?";
         public const string NO_WARNS_TEXT = "У тебя нет варнов, ты молодец";

@@ -217,7 +217,8 @@ namespace TGBotGame
 
         private static async Task SendHelpMessage(ITelegramBotClient botClient, Message message)
         {
-            Console.WriteLine($"Help");
+            MessageSender.SendMessage(botClient, Constants.GROUP_USAGE, message.From);
+            //Console.WriteLine($"Help");
         }
 
         private static Task BotOnChosenInlineResultReceived(ITelegramBotClient botClient,

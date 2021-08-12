@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -125,6 +126,7 @@ namespace BotDataSet
         }
         private static BotUser GetUser(string UserName)
         {
+            UserName = UserName.Replace("@", "");
             using (BotDBContext cont = new BotDBContext())
             {
                 if (cont.Users.Any(x => x.UserName == UserName))
@@ -162,7 +164,8 @@ namespace BotDataSet
         }
         public static async Task<ActionResult> RemoveNextGame(this List<BotUser> botUsers)
         {
-            await Task.Run(() => {
+            await Task.Run(() =>
+            {
                 botUsers.ForEach(async user =>
                 {
                     _ = await user.RemoveNextGame();
@@ -173,9 +176,9 @@ namespace BotDataSet
         public static async Task<ActionResult> RemoveNextGame(this User user)
         {
             var botUser = GetUser(user);
-            if (!botUser.NextGame) 
-            { 
-                return new AlreadyResult(); 
+            if (!botUser.NextGame)
+            {
+                return new AlreadyResult();
             }
             botUser.NextGame = false;
             using (var cont = new BotDBContext())
@@ -393,7 +396,7 @@ namespace BotDataSet
                 if (cont.Warns.Any(x => x.UserId == user.Id))
                 {
                     var Warn = cont.Warns.Where(x => x.UserId == user.Id);
-                    return Warn.Select(x=>x.Reason).ToList();
+                    return Warn.Select(x => x.Reason).ToList();
                 }
                 return null;
             }
@@ -443,7 +446,7 @@ namespace BotDataSet
             }
             using (var cont = new BotDBContext())
             {
-                var warn = cont.Warns.OrderBy(x => x.Id).First(t=>t.UserId==id);
+                var warn = cont.Warns.OrderBy(x => x.Id).First(t => t.UserId == id);
                 cont.Warns.Remove(warn);
                 await cont.SaveChangesAsync();
                 return new OkResult();
@@ -456,6 +459,17 @@ namespace BotDataSet
         public static async Task<ActionResult> AddPointsAsync(this User user, uint value)
         {
             var botUser = GetUser(user);
+            botUser.Points += value;
+            using (var cont = new BotDBContext())
+            {
+                cont.Users.Update(botUser);
+                await cont.SaveChangesAsync();
+            }
+            return new OkResult();
+        }
+        public static async Task<ActionResult> AddPointsAsync(long userId, uint value)
+        {
+            var botUser = GetUser(userId);
             botUser.Points += value;
             using (var cont = new BotDBContext())
             {
@@ -640,9 +654,9 @@ namespace BotDataSet
                 }
             }
         }
-        public static async Task<Payment> AddPayment(uint sum)
+        public static async Task<Payment> AddPayment(uint sum, long userId)
         {
-            //if (sum % 50 != 0) throw new Exception("Invalid sum");
+            if (sum % 50 != 0) throw new Exception("Invalid sum");
             //if (!PhoneValidation.IsMatch(phone)) throw new Exception("Invalid number");
             var rId = (new Random()).Next(1000000, 9999999);
             using (var cont = new BotDBContext())
@@ -653,13 +667,24 @@ namespace BotDataSet
                 }
                 if (cont.Payments.All(x => x.RId != rId))
                 {
-                    var paym = new Payment() { RId = (uint)rId, Sum = sum};
+                    var paym = new Payment() { RId = (uint)rId, Sum = sum, UserId = userId };
                     await cont.Payments.AddAsync(paym);
                     await cont.SaveChangesAsync();
                     return paym;
                 }
             }
             throw new Exception("Something went wrong");
+        }
+
+        public static async Task<List<Payment>> GetListPaymentsAsync()
+        {
+            await using (var cont = new BotDBContext())
+            {
+                {
+                    var paym = cont.Payments.ToList();
+                    return paym;
+                }
+            }
         }
         public static async Task<ActionResult> RemovePayment(this Payment payment)
         {

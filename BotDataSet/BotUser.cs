@@ -21,7 +21,7 @@ namespace BotDataSet
         public string MuteReason { get; set; }
         public string BanReason { get; set; }
         //[ForeignKey("UserId")]
-        public virtual ICollection<Warn> Warns{ get; set; }
+        public ICollection<Warn> Warns{ get; set; }
     }
     public class Warn
     {
@@ -31,7 +31,7 @@ namespace BotDataSet
         public string Reason { get; set; }
         public long UserId { get; set;}
         //[ForeignKey("UserId")]
-        public virtual BotUser User { get; set; }
+        public BotUser User { get; set; }
 
     }
     public class Friends
@@ -51,6 +51,6 @@ namespace BotDataSet
         [Key]
         public uint RId { get; set; }
         public uint Sum { get; set; }
-        public string Phone { get; set; }
+        public long UserId { get; set; }
     }
 }

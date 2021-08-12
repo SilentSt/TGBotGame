@@ -29,7 +29,10 @@ namespace BotTesting
             Console.WriteLine(u.UserId);
             user.GetFriendsList().ToList().ForEach(x => Console.WriteLine(x.UserName));
             */
-            
+            using(var cont  = new BotDBContext())
+            {
+                
+            }
             Console.ReadKey();
             //Console.WriteLine(hs.Payments.FirstOrDefault().Sum);
         }

@@ -19,8 +19,8 @@ namespace TGBotGame
 
         public static async Task FillBalance(uint amount, ITelegramBotClient botClient, Telegram.Bot.Types.User user)
         {
-            Handlers.users[user.Id].payment = await Assist.AddPayment(amount);
-            MessageSender.SendMessage(botClient, "Заявка на оплату создана, перевидите "+amount+" рублей на киви кошелек "+Configuration.QiwiMobile+
+            Handlers.users[user.Id].payment = await Assist.AddPayment(amount, user.Id);
+            MessageSender.SendMessage(botClient, "Заявка на оплату создана, переведите "+amount+" рублей на киви кошелек "+Configuration.QiwiMobile+
                                                  "(номер телефона). Обязательно напишите этот код в комментарий - "+Handlers.users[user.Id].payment.RId+
                                                  ". Когда вы оплатите и платеж пройдет, я уведомлю вас.", user);
         }
@@ -202,7 +202,7 @@ public static async Task GetReason(Punishments punishments, ITelegramBotClient b
             var warn = user.GetUserWarnCount();
             if (warn > 0)
             {
-                string reason = "У тебя есть " + user.GetUserWarnCount() + " варнов: \n" +
+                string reason = "У тебя есть " + user.GetUserWarnCount() + " варн(а): \n" +
                                 String.Join("\n", user.GetUserWarnsReasons());
                 MessageSender.SendMessage(botClient, reason, user);
                 Handlers.users[user.Id].keyboardNavigator.PopToMenu(botClient, user);
