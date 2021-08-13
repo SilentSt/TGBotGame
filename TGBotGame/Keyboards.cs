@@ -155,5 +155,13 @@ namespace TGBotGame
             btn.CallbackData = "remove_message";
             return new InlineKeyboardMarkup(btn);
         }
+
+        public static InlineKeyboardMarkup PrepareLinkKeyboardMarkup(string link)
+        {
+            var btn = new InlineKeyboardButton();
+            btn.Text = "Канал с информацией";
+            btn.Url = link;
+            return new InlineKeyboardMarkup(btn);
+        }
     }
 }
