@@ -12,7 +12,15 @@ namespace TGBotGame
     {
         public static async Task DeleteFriend(ITelegramBotClient botClient, Message message)
         {
-            var whom = message.Text.Split(' ')[1];
+            string whom;
+            if (message.ReplyToMessage!=null)
+            {
+                whom = message.ReplyToMessage.From.Username;
+            }
+            else
+            {
+                whom = message.Text.Split(' ')[1];
+            }
             var result = await message.From.RemoveFriendAsync(whom);
             if (result is OkResult)
             {
@@ -38,7 +46,15 @@ namespace TGBotGame
 
         public static async Task AddFriend(ITelegramBotClient botClient, Message message)
         {
-            var whom = message.Text.Split(' ')[1];
+            string whom;
+            if (message.ReplyToMessage!=null)
+            {
+                whom = message.ReplyToMessage.From.Username;
+            }
+            else
+            {
+                whom = message.Text.Split(' ')[1];
+            }
             if (string.IsNullOrEmpty(whom) || string.IsNullOrWhiteSpace(whom))
             {
                 return;
@@ -57,7 +73,15 @@ namespace TGBotGame
 
         public static async Task SendGiftToFriend(ITelegramBotClient botClient, Message message)
         {
-            var whom = message.Text.Split(' ')[1];
+            string whom;
+            if (message.ReplyToMessage!=null)
+            {
+                whom = message.ReplyToMessage.From.Username;
+            }
+            else
+            {
+                whom = message.Text.Split(' ')[1];
+            }
             var count = message.Text.Split(' ')[2];
             uint val;
             if (uint.TryParse(count, out val))
