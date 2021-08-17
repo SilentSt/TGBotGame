@@ -17,7 +17,7 @@ namespace TGBotGame
         public static async Task Main()
         {
             Bot = new TelegramBotClient(Configuration.BotToken);
-
+//1984271594:AAFYJS7gnZf_z4wiYddI5eEOnzp8aE2fGuU
             var me = await Bot.GetMeAsync();
             Console.Title = me.Username;
 
