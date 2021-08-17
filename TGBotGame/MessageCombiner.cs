@@ -52,13 +52,18 @@ namespace TGBotGame
 
                     if (message.Text.Contains("До:") && Assist.GetUserWarnCount(long.Parse(whomId)) == 3)
                     {
-                        Assist.ResetWans(long.Parse(whomId));                                                                               
+                        await Assist.ResetWarns(long.Parse(whomId));                                                                               
                         Assist.Mute(long.Parse(whomId), "Получено 3 варна", GetUnpunishmentDate(message.Text));
                     }
 
                     break;
                 case "warn":
                     await Assist.AddWarn(long.Parse(whomId), GetReason(message.Text));
+                    if (message.Text.Contains("До:") && Assist.GetUserWarnCount(long.Parse(whomId)) >= 3)
+                    {
+                        await Assist.ResetWarns(long.Parse(whomId));                                                                               
+                        Assist.Mute(long.Parse(whomId), "Получено 3 варна", GetUnpunishmentDate(message.Text));
+                    }
                     break;
                 case "звук_включён":
                     Assist.UnMute(long.Parse(whomId));
@@ -76,7 +81,7 @@ namespace TGBotGame
         private static string GetWarnCount(string message)
         {
             var rows = message.Split('\n').Length;
-            var sp1 = message.Split('\n')[rows-2];
+            var sp1 = message.Split('\n')[rows-3];
             var sp2 = sp1.Split(':')[1];
             var sp3 = sp2.Replace(" ", "").Split('/')[0];
             return sp3;
@@ -110,7 +115,7 @@ namespace TGBotGame
         private static DateTime GetUnpunishmentDate(string message)
         {
             var rows = message.Split('\n').Length;
-            message = message.Split('\n')[rows-3].Split(':')[1];
+            message = message.Split('\n')[rows-4].Split(':')[1]+":"+message.Split('\n')[rows-4].Split(':')[2];
             var date = message.Split(' ')[1];
             var time = message.Split(' ')[2];
             return new DateTime(int.Parse(date.Split('/')[2]),

@@ -7,6 +7,7 @@ using QiwiApi;
 using QiwiApi.Events;
 using Telegram.Bot;
 using Telegram.Bot.Extensions.Polling;
+using System.Timers;
 
 namespace TGBotGame
 {
@@ -17,7 +18,6 @@ namespace TGBotGame
         public static async Task Main()
         {
             Bot = new TelegramBotClient(Configuration.BotToken);
-//1984271594:AAFYJS7gnZf_z4wiYddI5eEOnzp8aE2fGuU
             var me = await Bot.GetMeAsync();
             Console.Title = me.Username;
 
@@ -31,11 +31,34 @@ namespace TGBotGame
             qiwi.OnIncomingPayment += QiwiOnOnIncomingPayment;
             //await Bot.SendTextMessageAsync(Configuration.GroupId, "/info RUBLbBudet");
             Console.WriteLine($"Start listening for @{me.Username}");
+            // Create a timer with a two second interval.
+            var aTimer = new System.Timers.Timer(60000);
+            // Hook up the Elapsed event for the timer. 
+            aTimer.Elapsed += ATimerOnElapsed;
+            aTimer.AutoReset = true;
+            aTimer.Enabled = true;
             Console.ReadLine();
 
             // Send cancellation request to stop bot
             cts.Cancel();
         }
+
+        private static void ATimerOnElapsed(object sender, ElapsedEventArgs e)
+        {
+            Assist.GetAllUsers().ForEach(user =>
+            {
+                if (user.IsMuted&&user.UnMutedDate<DateTime.Now)
+                {
+                    user.UnMute();
+                }
+
+                if (user.IsBanned&&user.UnBanDate<DateTime.Now)
+                {
+                    user.UnBan();
+                }
+            } );
+        }
+
 
         private static async void QiwiOnOnIncomingPayment(object? sender, PaymentEventArgs e)
         {

@@ -84,6 +84,14 @@ namespace BotDataSet
                 }
             }
         }
+
+        public static List<BotUser> GetAllUsers()
+        {
+            using (BotDBContext cont = new BotDBContext())
+            {
+                return cont.Users.ToList();
+            }
+        }
         private static BotUser GetWarnUser(this User user)
         {
             using (BotDBContext cont = new BotDBContext())
