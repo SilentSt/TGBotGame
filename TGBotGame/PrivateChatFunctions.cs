@@ -219,12 +219,12 @@ public static async Task GetReason(Punishments punishments, ITelegramBotClient b
 
 public static async Task GetRules(ITelegramBotClient botClient, Telegram.Bot.Types.User user)
 {
-    MessageSender.SendMessage(botClient, Configuration.RulesLink, user);
+    MessageSender.SendMessage(botClient, Keyboards.PrepareLinkKeyboardMarkup(Configuration.RulesLink),"Нажмите на кнопку, чтобы перейти на канал с правилами", user);
 }
 
 public static async Task GetRolesDescription(ITelegramBotClient botClient, Telegram.Bot.Types.User user)
 {
-    MessageSender.SendMessage(botClient, Configuration.RolesDescLink, user);
+    MessageSender.SendMessage(botClient,Keyboards.PrepareLinkKeyboardMarkup(Configuration.RolesDescLink), "Нажмите на кнопку, чтобы перейти на канал с описанием ролей", user);
 }
 }
 }
