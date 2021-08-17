@@ -452,6 +452,22 @@ namespace BotDataSet
                 return new OkResult();
             }
         }
+
+        public static async Task<ActionResult> ResetWarns(long id)
+        {
+            var botUser = GetUserWarnCount(id);
+            if (botUser < 1)
+            {
+                return new AlreadyResult();
+            }
+            using (var cont = new BotDBContext())
+            {
+                var warn = cont.Warns.OrderBy(x => x.Id).Where(t => t.UserId == id);
+                cont.Warns.RemoveRange(warn);
+                await cont.SaveChangesAsync();
+                return new OkResult();
+            }
+        }
         public static uint GetPoints(this User user)
         {
             return GetUser(user).Points;
