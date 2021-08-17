@@ -25,15 +25,15 @@ namespace TGBotGame
             var result = await message.From.RemoveFriendAsync(whom);
             if (result is OkResult)
             {
-                MessageSender.SendMessage(botClient, Constants.FRIEND_REMOVED_TEXT, message.From);
+                MessageSender.SendMessage(botClient,Keyboards.PrepareUnpunishmentAdminsKeyboard(message.From), Constants.FRIEND_REMOVED_TEXT, message.From);
             }
             else if (result is Assist.AlreadyResult)
             {
-                MessageSender.SendMessage(botClient, Constants.FRIEND_REMOVED_ALREADY, message.From);
+                MessageSender.SendMessage(botClient,Keyboards.PrepareUnpunishmentAdminsKeyboard(message.From), Constants.FRIEND_REMOVED_ALREADY, message.From);
             }
             else
             {
-                MessageSender.SendMessage(botClient, Constants.FRIEND_REMOVED_EXCEPTION, message.From);
+                MessageSender.SendMessage(botClient,Keyboards.PrepareUnpunishmentAdminsKeyboard(message.From), Constants.FRIEND_REMOVED_EXCEPTION, message.From);
             }
         }
 
@@ -41,7 +41,7 @@ namespace TGBotGame
         {
             foreach (var botUser in message.From.GetFriendsList())
             {
-                MessageSender.SendMessage(botClient, Constants.VOKE_FRIENDS_PLAY_TEXT + message.From.Username, botUser);
+                MessageSender.SendMessage(botClient,Keyboards.PrepareUnpunishmentAdminsKeyboard(message.From), Constants.VOKE_FRIENDS_PLAY_TEXT + message.From.Username, botUser);
             }
         }
 
@@ -64,11 +64,11 @@ namespace TGBotGame
             var result = await message.From.AddFriend(whom);
             if (result is OkResult || result is Assist.AlreadyResult)
             {
-                MessageSender.SendMessage(botClient, Constants.SUCCESS_ADD_FRIEND_TEXT, message.From);
+                MessageSender.SendMessage(botClient,Keyboards.PrepareUnpunishmentAdminsKeyboard(message.From), Constants.SUCCESS_ADD_FRIEND_TEXT, message.From);
             }
             else
             {
-                MessageSender.SendMessage(botClient, Constants.USER_NOT_FOUND, message.From);
+                MessageSender.SendMessage(botClient,Keyboards.PrepareUnpunishmentAdminsKeyboard(message.From), Constants.USER_NOT_FOUND, message.From);
             }
         }
 
@@ -92,20 +92,20 @@ namespace TGBotGame
                 var result = await message.From.GiftPointsAsync(whom, val);
                 if (result is OkResult)
                 {
-                    MessageSender.SendMessage(botClient, Constants.GIFT_SENT_TEXT, message.From);
+                    MessageSender.SendMessage(botClient,Keyboards.PrepareUnpunishmentAdminsKeyboard(message.From), Constants.GIFT_SENT_TEXT, message.From);
                 }
                 else if (result is Assist.NotEnoughResult)
                 {
-                    MessageSender.SendMessage(botClient, Constants.NOT_ENOUGH_CREDITS_TEXT, message.From);
+                    MessageSender.SendMessage(botClient,Keyboards.PrepareUnpunishmentAdminsKeyboard(message.From), Constants.NOT_ENOUGH_CREDITS_TEXT, message.From);
                 }
                 else if (result is NotFoundResult)
                 {
-                    MessageSender.SendMessage(botClient, Constants.USER_NOT_FOUND, message.From);
+                    MessageSender.SendMessage(botClient,Keyboards.PrepareUnpunishmentAdminsKeyboard(message.From), Constants.USER_NOT_FOUND, message.From);
                 }
             }
             else
             {
-                MessageSender.SendMessage(botClient, Constants.ERROR_IN_SUM, message.From);
+                MessageSender.SendMessage(botClient, Keyboards.PrepareUnpunishmentAdminsKeyboard(message.From),Constants.ERROR_IN_SUM, message.From);
             }
         }
 
@@ -114,7 +114,7 @@ namespace TGBotGame
             var result = await Assist.AddNextGame(message.From);
             if (result is OkResult)
             {
-                MessageSender.SendMessage(botClient, Constants.VOKE_NEXT_GAME_TEXT, message.From);
+                MessageSender.SendMessage(botClient,Keyboards.PrepareUnpunishmentAdminsKeyboard(message.From), Constants.VOKE_NEXT_GAME_TEXT, message.From);
             }
         }
 
@@ -126,7 +126,7 @@ namespace TGBotGame
                 var users = Assist.GetNextGameUsers();
                 foreach (var user in users)
                 {
-                    MessageSender.SendMessage(botClient, Constants.VOKE_PLAYER_PLAY, user);
+                    MessageSender.SendMessage(botClient,Keyboards.PrepareUnpunishmentAdminsKeyboard(message.From), Constants.VOKE_PLAYER_PLAY, user);
                 }
 
                 await users.RemoveNextGame();

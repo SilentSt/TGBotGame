@@ -37,10 +37,12 @@ namespace TGBotGame
             );
         }
 
-        public static void SendMessage(ITelegramBotClient botClient, string message, BotUser botUser)
+        public static void SendMessage(ITelegramBotClient botClient,
+            InlineKeyboardMarkup prepareUnpunishmentAdminsKeyboard, string message, BotUser botUser)
         {
             botClient.SendTextMessageAsync(botUser.UserId,
-                message
+                message,
+                replyMarkup:prepareUnpunishmentAdminsKeyboard
             );
         }
 

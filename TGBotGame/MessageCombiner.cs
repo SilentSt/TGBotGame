@@ -11,6 +11,7 @@ namespace TGBotGame
         //private static string whomName;
         private static string whomId;
         private static DateTime? unPunDate = null;
+
         public static async Task Combine(Message message)
         {
             whomId = GetUserId(message.Text);
@@ -26,6 +27,7 @@ namespace TGBotGame
                     {
                         unPunDate = GetUnpunishmentDate(message.Text);
                     }
+
                     Assist.Ban(long.Parse(whomId), GetReason(message.Text), unPunDate);
                     unPunDate = null;
                     break;
@@ -37,6 +39,7 @@ namespace TGBotGame
                     {
                         unPunDate = GetUnpunishmentDate(message.Text);
                     }
+
                     Assist.Mute(long.Parse(whomId), GetReason(message.Text), unPunDate);
                     unPunDate = null;
                     break;
@@ -52,7 +55,7 @@ namespace TGBotGame
 
                     if (message.Text.Contains("До:") && Assist.GetUserWarnCount(long.Parse(whomId)) == 3)
                     {
-                        await Assist.ResetWarns(long.Parse(whomId));                                                                               
+                        await Assist.ResetWarns(long.Parse(whomId));
                         Assist.Mute(long.Parse(whomId), "Получено 3 варна", GetUnpunishmentDate(message.Text));
                     }
 
@@ -61,15 +64,46 @@ namespace TGBotGame
                     await Assist.AddWarn(long.Parse(whomId), GetReason(message.Text));
                     if (message.Text.Contains("До:") && Assist.GetUserWarnCount(long.Parse(whomId)) >= 3)
                     {
-                        await Assist.ResetWarns(long.Parse(whomId));                                                                               
+                        await Assist.ResetWarns(long.Parse(whomId));
                         Assist.Mute(long.Parse(whomId), "Получено 3 варна", GetUnpunishmentDate(message.Text));
                     }
+
                     break;
                 case "звук_включён":
                     Assist.UnMute(long.Parse(whomId));
                     break;
                 case "warn_reset":
                     await Assist.RemoveWarn(long.Parse(whomId));
+                    break;
+                case "flood":
+                    var res = GetPunishment(message.Text);
+                    if (res.ToLower().Contains("заглушить"))
+                    {
+                        Assist.Mute(long.Parse(whomId), GetReason(message.Text), GetUnpunishmentDate(message.Text));
+                    }
+                    else if (res.ToLower().Contains("блок"))
+                    {
+                        Assist.Ban(long.Parse(whomId), GetReason(message.Text), GetUnpunishmentDate(message.Text));
+                    }
+                    else
+                    {
+                        await Assist.AddWarn(long.Parse(whomId), GetReason(message.Text));
+                    }
+                    break;
+                case "spam":
+                    var res1 = GetPunishment(message.Text);
+                    if (res1.ToLower().Contains("заглушить"))
+                    {
+                        Assist.Mute(long.Parse(whomId), GetReason(message.Text), GetUnpunishmentDate(message.Text));
+                    }
+                    else if (res1.ToLower().Contains("блок"))
+                    {
+                        Assist.Ban(long.Parse(whomId), GetReason(message.Text), GetUnpunishmentDate(message.Text));
+                    }
+                    else
+                    {
+                        await Assist.AddWarn(long.Parse(whomId), GetReason(message.Text));
+                    }
                     break;
                 case "новый_пользователь":
                     whomId = GetUserId(message.Text, 1);
@@ -80,18 +114,16 @@ namespace TGBotGame
 
         private static string GetWarnCount(string message)
         {
-            var rows = message.Split('\n').Length;
-            var sp1 = message.Split('\n')[rows-3];
-            var sp2 = sp1.Split(':')[1];
-            var sp3 = sp2.Replace(" ", "").Split('/')[0];
-            return sp3;
+            return message.Split('\n').First(x => x.Contains("• Новые предупреждения: "))
+                .Replace("• Новые предупреждения: ", "").Split("/").First();
         }
 
         private static string GetReason(string message)
         {
             try
             {
-                return message.Split('\n')[4].Split(':')[2];
+                return message.Split('\n').First(x => x.Contains("• По какой причине: "))
+                    .Replace("• По какой причине: ", "");
             }
             catch (Exception e)
             {
@@ -103,8 +135,18 @@ namespace TGBotGame
         {
             try
             {
-                return message.Split('\n')[columnNumber].Split(':')[1].Split(' ').Last().Replace("[", "")
-                    .Replace("]", "");
+                if (message.Contains("Кому:"))
+                {
+                    return message.Split('\n').FirstOrDefault(x => x.Contains("Кому:")).Split(":").Last().Split(" ")
+                        .Last()
+                        .Replace("[", "").Replace("]", "");
+                }
+                else
+                {
+                    return message.Split('\n').FirstOrDefault(x => x.Contains("Кто:")).Split(":").Last().Split(" ")
+                        .Last()
+                        .Replace("[", "").Replace("]", "");
+                }
             }
             catch (Exception e)
             {
@@ -112,15 +154,36 @@ namespace TGBotGame
             }
         }
 
-        private static DateTime GetUnpunishmentDate(string message)
+        private static DateTime? GetUnpunishmentDate(string message)
         {
-            var rows = message.Split('\n').Length;
-            message = message.Split('\n')[rows-4].Split(':')[1]+":"+message.Split('\n')[rows-4].Split(':')[2];
-            var date = message.Split(' ')[1];
-            var time = message.Split(' ')[2];
-            return new DateTime(int.Parse(date.Split('/')[2]),
-                int.Parse(date.Split('/')[1]), int.Parse(date.Split('/')[0]),
-                int.Parse(time.Split(':')[0]), int.Parse(time.Split(':')[1]), 0);
+            try
+            {
+                message = message.Split('\n').FirstOrDefault(x => x.Contains("• До: ")).Replace("• До: ", "");
+                var date = message.Split(' ')[0];
+                var time = message.Split(' ')[1];
+                return new DateTime(int.Parse(date.Split('/')[2]),
+                    int.Parse(date.Split('/')[1]), int.Parse(date.Split('/')[0]),
+                    int.Parse(time.Split(':')[0]), int.Parse(time.Split(':')[1]), 0);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return null;
+            }
+        }
+
+        private static string? GetPunishment(string message)
+        {
+            try
+            {
+                return message.Split("\n").First(x => x.Contains("• Наказание: ")).Replace("• Наказание: ", "").Split(' ').First();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return null;
+            }
+            
         }
     }
 }

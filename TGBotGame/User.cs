@@ -17,6 +17,7 @@ namespace TGBotGame
             this.chatId = chatId;
             keyboardNavigator = new KeyboardsNavigator();
             _user = user;
+            curState = KeyboardsNavigator.CurentState.Menu;
         }
     }
 }

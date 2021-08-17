@@ -89,8 +89,7 @@ namespace TGBotGame
                     "/friendsplay" => GroupFunctions.VokeFriendsPlay(botClient, message),
                     "/delfriends" => GroupFunctions.DeleteFriend(botClient, message),
                     "/help" => SendHelpMessage(botClient, message),
-                    "/startgame" => GroupFunctions.SendInvitesToUsers(botClient, message),
-                    _ => Usage(botClient, message, Constants.GROUP_USAGE, new ReplyKeyboardMarkup())
+                    "/startgame" => GroupFunctions.SendInvitesToUsers(botClient, message)
                 };
             }
             else
@@ -101,73 +100,14 @@ namespace TGBotGame
                 }
                 switch (message.Text)
                 {
-                    case "🗣 Позвать меня на следующую игру":
-                        await PrivateChatFunctions.VokeToNextGame(botClient, message.From);
-                        break;
-                    case "❓ Узнать причину и снять мут/варн/бан":
-                        users[message.Chat.Id].keyboardNavigator.PushToReasonPunishment(botClient, message.From);
-                        break;
-                    case "🤝 Кто у меня в друзьях?":
-                        users[message.Chat.Id].keyboardNavigator.PushToFriends(botClient, message.From);
-                        break;
-                    case "📕 Правила чата и игры":
-                        await PrivateChatFunctions.GetRules(botClient, message.From);
-                        break;
-                    case "🤵🏻 Описание ролей":
-                        await PrivateChatFunctions.GetRolesDescription(botClient, message.From);
-                        break;
-                    case "Мои друзья":
-                        await PrivateChatFunctions.GetFriendsList(botClient, message.From);
-                        break;
-                    case "Удалить из друзей":
-                        await PrivateChatFunctions.GetRemoveList(botClient, message.From);
-                        break;
-                    case "Причина варна":
-                        await PrivateChatFunctions.GetReason(PrivateChatFunctions.Punishments.Warn, botClient, message.From);
-                        break;
-                    case "Причина мута":
-                        await PrivateChatFunctions.GetReason(PrivateChatFunctions.Punishments.Mute, botClient, message.From);
-                        break;
-                    case "Причина бана":
-                        await PrivateChatFunctions.GetReason(PrivateChatFunctions.Punishments.Ban, botClient, message.From);
-                        break;
-                    case "Узнать причину":
-                        users[message.Chat.Id].keyboardNavigator.PushToReason(botClient, message.From);
-                        break;
-                    case "Снять наказание":
-                        users[message.Chat.Id].keyboardNavigator.PushToPunishment(botClient, message.From);
-                        break;
-                    case "Пополнить баланс":
-                        users[message.Chat.Id].keyboardNavigator.PushToFillBalance(botClient, message.From);
-                        break;
-                    case"5 кредитов":
-                        await PrivateChatFunctions.FillBalance(50, botClient, message.From);
-                        break;
-                    case"10 кредитов":
-                        await PrivateChatFunctions.FillBalance(100, botClient, message.From);
-                        break;
-                    case"20 кредитов":
-                        await PrivateChatFunctions.FillBalance(200, botClient, message.From);
-                        break;
-                    case "Снять варн":
-                        await PrivateChatFunctions.RemovePunishment(PrivateChatFunctions.Punishments.Warn, botClient, message.From);
-                        break;
-                    case "Снять мут":
-                        await PrivateChatFunctions.RemovePunishment(PrivateChatFunctions.Punishments.Mute, botClient, message.From);
-                        break;
-                    case "Снять бан":
-                        await PrivateChatFunctions.RemovePunishment(PrivateChatFunctions.Punishments.Ban, botClient, message.From);
-                        break;
-                    case "Меню":
-                        users[message.From.Id].keyboardNavigator.PopToMenu(botClient, message.From);
-                        break;
                     default:
-                        await Usage(botClient, message, Constants.USER_USAGE, Keyboards.PrepareMenuKeyboard());
+                        await Usage(botClient, message, Constants.USER_USAGE, Keyboards.PrepareInlineKeyboard(KeyboardsTexts.menu));
+                        await botClient.DeleteMessageAsync(message.Chat.Id,message.MessageId);
                         break;
                 }
             }
 
-            static async Task<Message> Usage(ITelegramBotClient botClient, Message message, string mes, ReplyKeyboardMarkup keyboard)
+            static async Task<Message> Usage(ITelegramBotClient botClient, Message message, string mes, InlineKeyboardMarkup keyboard)
             {
                 return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
                     text: mes,
@@ -181,14 +121,95 @@ namespace TGBotGame
             if (callbackQuery.Data == "remove_message")
             {
                 await botClient.DeleteMessageAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId);
+                return;
+            }
+            if (!users.ContainsKey(callbackQuery.Message.Chat.Id))
+            {
+                users.Add(callbackQuery.Message.Chat.Id, new User(callbackQuery.Message.Chat.Id, callbackQuery.Message.From));
             }
             if (users.ContainsKey(callbackQuery.Message.Chat.Id)&&
-                users[callbackQuery.Message.Chat.Id].curState == KeyboardsNavigator.CurentState.Friends
+                users[callbackQuery.Message.Chat.Id].curState == KeyboardsNavigator.CurentState.RemoveFriends
                 )
             {
+                if (callbackQuery.Data == "Меню")
+                {
+                    users[callbackQuery.Message.From.Id].keyboardNavigator.PopToMenu(botClient, callbackQuery.From, callbackQuery);
+                    users[callbackQuery.Message.From.Id].curState = KeyboardsNavigator.CurentState.Menu;
+                }
                 long whomDelete = long.Parse(callbackQuery.Data);
                 //in inline keyboard you`ll see names of users, but in data will be there chat id`s
-                await PrivateChatFunctions.RemoveFriend(botClient, whomDelete, callbackQuery.From);
+                await PrivateChatFunctions.RemoveFriend(botClient, whomDelete, callbackQuery.From, callbackQuery);
+                return;
+            }
+            /*else if (callbackQuery.Data == "Меню")
+            {
+                users[callbackQuery.Message.From.Id].keyboardNavigator.PopToMenu(botClient, callbackQuery.From, callbackQuery);
+                users[callbackQuery.Message.From.Id].curState = KeyboardsNavigator.CurentState.Menu;
+                return;
+            }*/
+        
+            switch (callbackQuery.Data)
+            {
+                case "next":
+                        await PrivateChatFunctions.VokeToNextGame(botClient, callbackQuery.From, callbackQuery);
+                        break;
+                    case "reason":
+                        users[callbackQuery.Message.Chat.Id].keyboardNavigator.PushToReasonPunishment(botClient, callbackQuery.From, callbackQuery);
+                        break;
+                    case "friends":
+                        users[callbackQuery.Message.Chat.Id].keyboardNavigator.PushToFriends(botClient, callbackQuery.From, callbackQuery);
+                        break;
+                    case "rules":
+                        await PrivateChatFunctions.GetRules(botClient, callbackQuery.From, callbackQuery);
+                        break;
+                    case "desc":
+                        await PrivateChatFunctions.GetRolesDescription(botClient, callbackQuery.From, callbackQuery);
+                        break;
+                    case "Мои друзья":
+                        await PrivateChatFunctions.GetFriendsList(botClient, callbackQuery.From, callbackQuery);
+                        break;
+                    case "Удалить из друзей":
+                        await PrivateChatFunctions.GetRemoveList(botClient, callbackQuery.From, callbackQuery);
+                        break;
+                    case "Причина варна":
+                        await PrivateChatFunctions.GetReason(PrivateChatFunctions.Punishments.Warn, botClient, callbackQuery.From, callbackQuery);
+                        break;
+                    case "Причина мута":
+                        await PrivateChatFunctions.GetReason(PrivateChatFunctions.Punishments.Mute, botClient, callbackQuery.From, callbackQuery);
+                        break;
+                    case "Причина бана":
+                        await PrivateChatFunctions.GetReason(PrivateChatFunctions.Punishments.Ban, botClient, callbackQuery.From, callbackQuery);
+                        break;
+                    case "Узнать причину":
+                        users[callbackQuery.Message.Chat.Id].keyboardNavigator.PushToReason(botClient, callbackQuery.From, callbackQuery);
+                        break;
+                    case "Снять наказание":
+                        users[callbackQuery.Message.Chat.Id].keyboardNavigator.PushToPunishment(botClient, callbackQuery.From, callbackQuery);
+                        break;
+                    case "Пополнить баланс":
+                        users[callbackQuery.Message.Chat.Id].keyboardNavigator.PushToFillBalance(botClient, callbackQuery.From, callbackQuery);
+                        break;
+                    case"5 кредитов":
+                        await PrivateChatFunctions.FillBalance(50, botClient, callbackQuery.From, callbackQuery);
+                        break;
+                    case"10 кредитов":
+                        await PrivateChatFunctions.FillBalance(100, botClient, callbackQuery.From, callbackQuery);
+                        break;
+                    case"20 кредитов":
+                        await PrivateChatFunctions.FillBalance(200, botClient, callbackQuery.From, callbackQuery);
+                        break;
+                    case "Снять варн":
+                        await PrivateChatFunctions.RemovePunishment(PrivateChatFunctions.Punishments.Warn, botClient, callbackQuery.From, callbackQuery);
+                        break;
+                    case "Снять мут":
+                        await PrivateChatFunctions.RemovePunishment(PrivateChatFunctions.Punishments.Mute, botClient, callbackQuery.From, callbackQuery);
+                        break;
+                    case "Снять бан":
+                        await PrivateChatFunctions.RemovePunishment(PrivateChatFunctions.Punishments.Ban, botClient, callbackQuery.From, callbackQuery);
+                        break;
+                    case "Меню":
+                        users[callbackQuery.Message.Chat.Id].keyboardNavigator.PopToMenu(botClient, callbackQuery.From, callbackQuery);
+                        break;
             }
         }
 
@@ -217,7 +238,7 @@ namespace TGBotGame
 
         private static async Task SendHelpMessage(ITelegramBotClient botClient, Message message)
         {
-            MessageSender.SendMessage(botClient, Constants.GROUP_USAGE, message.From);
+            MessageSender.SendMessage(botClient, Constants.GROUP_USAGE, message.Chat.Id);
             //Console.WriteLine($"Help");
         }
 

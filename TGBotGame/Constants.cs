@@ -13,6 +13,7 @@ namespace TGBotGame
         public const string USER_USAGE = "Я не понимаю текстовых сообщений, пожалуйста ,воспользуйтесь клавиатурой";
         public const string MENU_TEXT = "Чтобы взаимодействовать со мной, воспользуйтесь клавиатурой";
         public const string FRIENDS_TEXT = "Вы хотите посмотреть список друзей или удалить кого-то из списка?";
+        public const string FRIENDS_LIST_EMPTY = "Ваш список друзей пуст";
         public const string FRIEND_LIST_TEXT = "Список друзей:";
         public const string REMOVE_FRIEND_TEXT = "Кого вы хотите удалить?";
         public const string RULES_TEXT = "Вы перенаправлены на канал правил";
