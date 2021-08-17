@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 using BotDataSet;
 using Microsoft.AspNetCore.Mvc;
@@ -73,16 +74,18 @@ namespace TGBotGame
 
         public static async Task SendGiftToFriend(ITelegramBotClient botClient, Message message)
         {
-            string whom;
+            string whom, count = null;
             if (message.ReplyToMessage!=null)
             {
                 whom = message.ReplyToMessage.From.Username;
+                count = message.Text.Split(' ')[1];
             }
             else
             {
                 whom = message.Text.Split(' ')[1];
+                count = message.Text.Split(' ')[2];
             }
-            var count = message.Text.Split(' ')[2];
+            
             uint val;
             if (uint.TryParse(count, out val))
             {
