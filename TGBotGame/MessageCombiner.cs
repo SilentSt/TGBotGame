@@ -8,12 +8,14 @@ namespace TGBotGame
 {
     public static class MessageCombiner
     {
-        //private static string whomName;
         private static string whomId;
         private static DateTime? unPunDate = null;
 
         public static async Task Combine(Message message)
         {
+            //if it was message, not log
+            if(!message.Text.Contains("#id")&&!message.Text.Contains("•")) return;
+            
             whomId = GetUserId(message.Text);
             var spl1 = message.Text.Split('\n')[0];
             var tlw = spl1.ToLower();

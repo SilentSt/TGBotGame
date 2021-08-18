@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using BotDataSet;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using QiwiApi;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
@@ -30,7 +31,7 @@ namespace TGBotGame
                 _ => exception.ToString()
             };
 
-            //Console.WriteLine(ErrorMessage);
+            Console.WriteLine(ErrorMessage);
             return Task.CompletedTask;
         }
 
@@ -89,7 +90,8 @@ namespace TGBotGame
                     "/friendsplay" => GroupFunctions.VokeFriendsPlay(botClient, message),
                     "/delfriends" => GroupFunctions.DeleteFriend(botClient, message),
                     "/help" => SendHelpMessage(botClient, message),
-                    "/startgame" => GroupFunctions.SendInvitesToUsers(botClient, message)
+                    "/startgame" => GroupFunctions.SendInvitesToUsers(botClient, message),
+                    _ => null
                 };
             }
             else
@@ -113,7 +115,11 @@ namespace TGBotGame
                     text: mes,
                     replyMarkup: keyboard);
             }
+            
+            
+            
         }
+        
 
         // Process Inline Keyboard callback data
         private static async Task BotOnCallbackQueryReceived(ITelegramBotClient botClient, CallbackQuery callbackQuery)
