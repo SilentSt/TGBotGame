@@ -270,6 +270,7 @@ namespace BotDataSet
             var botUser = GetUser(user);
             botUser.IsMuted = false;
             botUser.UnMutedDate = null;
+            botUser.MuteReason = null;
             using (var cont = new BotDBContext())
             {
                 cont.Users.Update(botUser);
@@ -344,6 +345,7 @@ namespace BotDataSet
             var botUser = GetUser(user);
             botUser.IsBanned = false;
             botUser.UnBanDate = null;
+            botUser.BanReason = null;
             using (var cont = new BotDBContext())
             {
                 cont.Users.Update(botUser);
@@ -354,6 +356,7 @@ namespace BotDataSet
         {
             botUser.IsBanned = false;
             botUser.UnBanDate = null;
+            botUser.BanReason = null;
             using (var cont = new BotDBContext())
             {
                 cont.Users.Update(botUser);

@@ -46,6 +46,7 @@ namespace TGBotGame
                 // UpdateType.ShippingQuery:
                 // UpdateType.PreCheckoutQuery:
                 // UpdateType.Poll:
+                UpdateType.MyChatMember => BotOnNewUserAdded(update),
                 UpdateType.ChannelPost => MessageCombiner.Combine(update.ChannelPost),
                 UpdateType.Message => BotOnMessageReceived(botClient, update.Message),
                 UpdateType.EditedMessage => BotOnMessageReceived(botClient, update.EditedMessage),
@@ -63,6 +64,12 @@ namespace TGBotGame
             {
                 await HandleErrorAsync(botClient, exception, cancellationToken);
             }
+        }
+
+        private static Task BotOnNewUserAdded(Update update)
+        {
+            update.MyChatMember.From.GetUser();
+            return null;
         }
 
         private static async Task BotOnMessageReceived(ITelegramBotClient botClient, Message message)
