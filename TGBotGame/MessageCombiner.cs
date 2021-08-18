@@ -165,7 +165,7 @@ namespace TGBotGame
                 var time = message.Split(' ')[1];
                 return new DateTime(int.Parse(date.Split('/')[2]),
                     int.Parse(date.Split('/')[1]), int.Parse(date.Split('/')[0]),
-                    int.Parse(time.Split(':')[0]), int.Parse(time.Split(':')[1]), 0);
+                    int.Parse(time.Split(':')[0])+3, int.Parse(time.Split(':')[1]), 0);
             }
             catch (Exception e)
             {
