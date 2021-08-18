@@ -84,7 +84,20 @@ namespace TGBotGame
             var btn1 = new InlineKeyboardButton();
             btn1.Text = "Меню";
             btn1.CallbackData = "Меню";
-            return new InlineKeyboardMarkup(new List<InlineKeyboardButton>(){btn, btn1});
+            return new InlineKeyboardMarkup(new List<IEnumerable<InlineKeyboardButton>>()
+                {new List<InlineKeyboardButton>(){btn}, new List<InlineKeyboardButton>(){btn1}});
+        }
+
+        public static InlineKeyboardMarkup PreparePaymentKeyboardMarkup(string link)
+        {
+            var btn = new InlineKeyboardButton();
+            btn.Text = "Оплатить";
+            btn.Url = link;
+            var btn1 = new InlineKeyboardButton();
+            btn1.Text = "Меню";
+            btn1.CallbackData = "Меню";
+            return new InlineKeyboardMarkup(new List<IEnumerable<InlineKeyboardButton>>()
+                {new List<InlineKeyboardButton>(){btn}, new List<InlineKeyboardButton>(){btn1}});
         }
     }
 }

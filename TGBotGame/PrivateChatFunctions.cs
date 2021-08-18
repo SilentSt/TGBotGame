@@ -23,12 +23,10 @@ namespace TGBotGame
         {
             await botClient.DeleteMessageAsync(callbackQuery.Message.Chat.Id, callbackQuery.Message.MessageId);
             Handlers.users[user.Id].payment = await Assist.AddPayment(amount, user.Id);
-            MessageSender.SendMessage(botClient,Keyboards.PreparePopMenuKeyboard(user) ,"Заявка на оплату создана, переведите " + amount +
-                                                 " рублей на киви кошелек " + Configuration.QiwiMobile +
-                                                 "(номер телефона). Обязательно напишите этот код в комментарий - " +
-                                                 Handlers.users[user.Id].payment.RId +
-                                                 ". Когда вы оплатите и платеж пройдет, я уведомлю вас.", user);
-            
+            MessageSender.SendMessage(botClient,
+                Keyboards.PreparePaymentKeyboardMarkup(
+                    $"https://qiwi.com/payment/form/99?extra[%27accountType%27]=phone&extra[%27account%27]={Configuration.QiwiMobile}&amountInteger={amount}&amountFraction=0&extra[%27comment%27]={Handlers.users[user.Id].payment.RId}&blocked[0]=account&blocked[3]=comment&blocked[4]=amountInteger"),
+                "Когда вы оплатите и платеж пройдет, я уведомлю вас. Внимание, зачисление средств возможно в течение 3 дней", user);
         }
 
         public static async Task RemovePunishment(Punishments punishments, ITelegramBotClient botClient,

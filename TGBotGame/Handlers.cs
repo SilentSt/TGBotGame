@@ -30,7 +30,7 @@ namespace TGBotGame
                 _ => exception.ToString()
             };
 
-            Console.WriteLine(ErrorMessage);
+            //Console.WriteLine(ErrorMessage);
             return Task.CompletedTask;
         }
 
@@ -245,13 +245,13 @@ namespace TGBotGame
         private static Task BotOnChosenInlineResultReceived(ITelegramBotClient botClient,
             ChosenInlineResult chosenInlineResult)
         {
-            Console.WriteLine($"Received inline result: {chosenInlineResult.ResultId}");
+            //Console.WriteLine($"Received inline result: {chosenInlineResult.ResultId}");
             return Task.CompletedTask;
         }
 
         private static Task UnknownUpdateHandlerAsync(ITelegramBotClient botClient, Update update)
         {
-            Console.WriteLine($"Unknown update type: {update.Type}");
+            //Console.WriteLine($"Unknown update type: {update.Type}");
             return Task.CompletedTask;
         }
     }
